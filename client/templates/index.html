@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Access Control Interface</title>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            font-family: Arial, sans-serif;
+            color: #eee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .camera-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .camera-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .camera-view img {
+            height: 300px;
+            width: auto;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            background: #444;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #666;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Access Control Interface</h1>
+
+    <div class="camera-container">
+        <div class="camera-view">
+            <img id="cam0" src="" alt="Live Camera Feed" />
+            <div class="label">Live Feed</div>
+        </div>
+        <div class="camera-view">
+            <img id="cam1" src="" alt="Background Subtracted" />
+            <div class="label">Background Subtraction</div>
+        </div>
+        <div class="camera-view">
+            <img id="cam2" src="" alt="GEI" />
+            <div class="label">Gait Energy Image (GEI)</div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div>Person: <span id="person">Unknown</span></div>
+        <div>Access: <span id="access">Pending</span></div>
+    </div>
+
+    <div class="controls">
+        <button onclick="resetBackground()">Reset Background</button>
+        <button onclick="saveGEI()">Save GEI</button>
+    </div>
+
+    <script>
+        const socket = io();
+
+        socket.on('frame0', data => {
+            document.getElementById('cam0').src = 'data:image/jpeg;base64,' + data;
+        });
+        socket.on('frame1', data => {
+            document.getElementById('cam1').src = 'data:image/jpeg;base64,' + data;
+        });
+        socket.on('frame2', data => {
+            document.getElementById('cam2').src = 'data:image/jpeg;base64,' + data;
+            // Save the GEI base64 so we can reuse it
+            window.latestGEI = data;
+        });
+
+        socket.on('status_update', data => {
+            document.getElementById('mode').textContent = data.mode || 'Idle';
+            document.getElementById('person').textContent = data.person || 'Unknown';
+            document.getElementById('access').textContent = data.access || 'Pending';
+        });
+
+        function resetBackground() {
+            socket.emit('reset');
+        }
+
+        function saveGEI() {
+            const label = prompt("Enter identity label (e.g., name):");
+            if (!label || !window.latestGEI) {
+                alert("Missing label or GEI.");
+                return;
+            }
+
+            socket.emit('save', {
+                label: label,
+                gei: window.latestGEI
+            });
+        }
+    </script>
+</body>
+
+</html>
