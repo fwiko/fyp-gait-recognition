@@ -27,19 +27,43 @@ state = {
 # Define save directory for GEIs
 SAVE_DIR = "saved_geis"
 
-# Save GEI every 150 frames
+# Save GEI every 30 frames (increased from 10)
 FRAME_INTERVAL = 30
 
+# Maximum number of samples per identity
+MAX_SAMPLES_PER_IDENTITY = 20
 
-def is_different(gei_a, gei_b, threshold=5.0):
+
+def is_different(gei_a, gei_b, threshold=15.0):  # Increased from 5.0
     if gei_a is None or gei_b is None:
         return True
 
     if gei_a.shape != gei_b.shape:
         return True
 
+    # Calculate structural similarity index
     diff = np.linalg.norm(gei_a.astype("float32") - gei_b.astype("float32"))
     return diff > threshold
+
+
+def save_gei(gei, label):
+    """Save GEI image with label"""
+    if not os.path.exists(SAVE_DIR):
+        os.makedirs(SAVE_DIR)
+
+    # Check if we've reached the maximum samples for this identity
+    existing_samples = len(
+        [f for f in os.listdir(SAVE_DIR) if f.startswith(f"{label}_")]
+    )
+    if existing_samples >= MAX_SAMPLES_PER_IDENTITY:
+        print(f"Maximum samples reached for {label}")
+        return
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{label}_{timestamp}.jpg"
+    filepath = os.path.join(SAVE_DIR, filename)
+    cv2.imwrite(filepath, gei)
+    print(f"Saved GEI to {filepath}")
 
 
 def gei_save_thread():

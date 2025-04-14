@@ -40,6 +40,8 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
 header {
@@ -54,6 +56,7 @@ header {
 h1 {
     font-size: 1.5rem;
     font-weight: 600;
+    margin-bottom: 0;
 }
 
 main {
@@ -64,6 +67,7 @@ main {
     padding: var(--space-lg);
     width: 100%;
     max-width: 100rem;
+    flex: 1;
 }
 
 .camera-container {
@@ -107,9 +111,10 @@ main {
 .label {
     width: 100%;
     margin-bottom: var(--space-sm);
-    font-weight: bold;
+    font-weight: 600;
     text-align: left;
     color: var(--color-text-secondary);
+    font-size: 0.875rem;
 }
 
 .controls,
@@ -140,7 +145,7 @@ main {
 }
 
 .status-label {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
     margin-bottom: var(--space-xs);
     text-transform: uppercase;
@@ -149,7 +154,7 @@ main {
 
 .status-value {
     font-size: 1.1rem;
-    font-weight: bold;
+    font-weight: 600;
     color: var(--color-accent-success);
 }
 
@@ -165,8 +170,8 @@ button {
     background: var(--color-button);
     color: var(--color-text-primary);
     padding: var(--space-sm) var(--space-md);
-    font-size: 1rem;
-    font-weight: bold;
+    font-size: 0.875rem;
+    font-weight: 600;
     border: none;
     border-radius: var(--radius-md);
     cursor: pointer;
@@ -212,4 +217,16 @@ button:active {
     :root {
         --camera-view-height: 18rem;
     }
+}
+
+/* Add footer styles */
+footer {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    text-align: center;
+    padding: var(--space-sm);
+    font-size: 0.75rem;
+    width: 100%;
+    box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.5);
+    margin-top: auto;
 }

@@ -4,76 +4,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gait Recognition Access Control</title>
+    <title>Gait Recognition Management</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
     <header>
-        <h1>Gait Recognition: Access Control Server</h1>
+        <h1>Gait Recognition: Management Portal</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('access_rules') }}">Access Rules</a></li>
+                <li><a href="{{ url_for('stats') }}">Statistics</a></li>
+            </ul>
+        </nav>
     </header>
-    <main>
-        <section class="dashboard">
-            <div class="section-header">
-                <h2>Registered Identities</h2>
-            </div>
 
-            <div class="identity-list">
+    <main>
+        <section class="dashboard-section">
+            <h2>Registered Identities</h2>
+
+            <div class="identity-grid">
                 {% if identities %}
                 {% for identity in identities %}
-                <div class="identity-card"
-                    onclick="location.href='{{ url_for('view_identity', identity_id=identity.id) }}'">
-                    <div class="identity-info">
+                <div class="identity-card">
+                    <div class="identity-header">
                         <h3>{{ identity.label }}</h3>
-                        <div class="identity-meta">
-                            <div class="meta-item">
-                                <span class="meta-label">Gait Cycles:</span>
-                                <span class="meta-value">{{ identity.gait_cycles|length }}</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Access:</span>
-                                <span
-                                    class="meta-value access-status {% if identity.access_rule and identity.access_rule.rule %}access-allowed{% else %}access-denied{% endif %}">
-                                    {% if identity.access_rule and identity.access_rule.rule %}Allowed{% else %}Denied{%
-                                    endif %}
-                                </span>
-                            </div>
+                        <div
+                            class="identity-status {{ 'access-allowed' if identity.access_rule and identity.access_rule.rule else 'access-denied' }}">
+                            {{ "Access Allowed" if identity.access_rule and identity.access_rule.rule else "Access
+                            Denied" }}
                         </div>
+                    </div>
+
+                    {% set latest_gei = identity.gait_cycles[-1] if identity.gait_cycles else None %}
+                    {% if latest_gei %}
+                    <div class="identity-gei">
+                        <img src="data:image/jpeg;base64,{{ latest_gei.gei_image }}" alt="GEI for {{ identity.label }}">
+                    </div>
+                    <div class="identity-meta">
+                        <div>Samples: {{ identity.gait_cycles|length }}</div>
+                        <div>Latest: {{ latest_gei.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                    </div>
+                    {% else %}
+                    <div class="identity-gei empty-gei">
+                        <div class="no-data">No GEI data</div>
+                    </div>
+                    <div class="identity-meta">
+                        <div>No samples available</div>
+                    </div>
+                    {% endif %}
+
+                    <div class="identity-actions">
+                        <a href="{{ url_for('view_identity', identity_id=identity.id) }}" class="btn btn-primary">View
+                            Details</a>
                     </div>
                 </div>
                 {% endfor %}
                 {% else %}
-                <div class="empty-state">
+                <div class="no-data-message">
                     <p>No identities registered yet.</p>
-                    <p>Connect a client device or add identities manually.</p>
                 </div>
                 {% endif %}
             </div>
         </section>
-
-        <section class="connection-status">
-            <div class="status-card">
-                <h3>System Status</h3>
-                <div class="status-items">
-                    <div class="status-item">
-                        <span class="status-label">Connected Clients:</span>
-                        <span class="status-value" id="connectedClients">0</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">Database Status:</span>
-                        <span class="status-value status-active">Active</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">Last Activity:</span>
-                        <span class="status-value" id="lastActivity">Never</span>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <footer>
+        <p>&copy; Gait Recognition System</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
 </html>

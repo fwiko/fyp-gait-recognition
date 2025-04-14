@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - Gait Recognition Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header>
+        <h1>Gait Recognition: System Statistics</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('access_rules') }}">Access Rules</a></li>
+                <li><a href="{{ url_for('stats') }}" class="active">Statistics</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="stats-section">
+            <h2>System Statistics</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_identities }}</div>
+                    <div class="stat-label">Registered Identities</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_gait_cycles }}</div>
+                    <div class="stat-label">Total Gait Samples</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">{{ (total_identities > 0) and (total_gait_cycles /
+                        total_identities)|round|int or 0 }}</div>
+                    <div class="stat-label">Avg. Samples per Identity</div>
+                </div>
+            </div>
+
+            <div class="stats-charts">
+                <div class="chart-container">
+                    <h3>Recent Activity</h3>
+                    <div class="recent-activity">
+                        <h4>Latest Samples</h4>
+                        <ul class="activity-list">
+                            {% if latest_samples %}
+                            {% for sample in latest_samples %}
+                            <li>
+                                <div class="activity-identity">{{ sample.label }}</div>
+                                <div class="activity-time">{{ sample.latest_sample.strftime('%Y-%m-%d %H:%M') }}</div>
+                            </li>
+                            {% endfor %}
+                            {% else %}
+                            <li class="no-data">No recent activity</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Gait Recognition System</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

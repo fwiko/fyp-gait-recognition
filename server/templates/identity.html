@@ -4,127 +4,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ identity.label }} - Gait Recognition</title>
+    <title>{{ identity.label }} - Gait Recognition Management</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
     <header>
         <h1>Gait Recognition: Identity Details</h1>
-        <a href="{{ url_for('index') }}" class="back-link">← Back to Dashboard</a>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('access_rules') }}">Access Rules</a></li>
+                <li><a href="{{ url_for('stats') }}">Statistics</a></li>
+            </ul>
+        </nav>
     </header>
+
     <main>
-        <section class="identity-details">
-            <div class="section-header">
+        <section class="identity-detail-section">
+            <div class="identity-header">
                 <h2>{{ identity.label }}</h2>
-                <div class="header-actions">
-                    <button id="editIdentityBtn" class="primary-btn">Edit</button>
-                    <button id="deleteIdentityBtn" class="danger-btn">Delete</button>
+                <div
+                    class="identity-status {{ 'access-allowed' if identity.access_rule and identity.access_rule.rule else 'access-denied' }}">
+                    {{ "Access Allowed" if identity.access_rule and identity.access_rule.rule else "Access Denied" }}
                 </div>
             </div>
 
-            <div class="details-panel">
-                <div class="detail-group">
-                    <h3>Identity Information</h3>
-                    <div class="detail-item">
-                        <span class="detail-label">ID:</span>
-                        <span class="detail-value">{{ identity.id }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Name:</span>
-                        <span class="detail-value">{{ identity.label }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Access Status:</span>
-                        <span
-                            class="detail-value access-status {% if identity.access_rule and identity.access_rule.rule %}access-allowed{% else %}access-denied{% endif %}">
-                            {% if identity.access_rule and identity.access_rule.rule %}Allowed{% else %}Denied{% endif
-                            %}
-                        </span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Gait Cycles:</span>
-                        <span class="detail-value">{{ identity.gait_cycles|length }}</span>
-                    </div>
+            <div class="identity-info">
+                <div class="info-card">
+                    <div class="info-label">ID</div>
+                    <div class="info-value">{{ identity.id }}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Total Samples</div>
+                    <div class="info-value">{{ gait_cycles|length }}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">First Registered</div>
+                    <div class="info-value">{{ gait_cycles[0].created_at.strftime('%Y-%m-%d %H:%M') if gait_cycles else
+                        'N/A' }}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Latest Sample</div>
+                    <div class="info-value">{{ gait_cycles[-1].created_at.strftime('%Y-%m-%d %H:%M') if gait_cycles else
+                        'N/A' }}</div>
                 </div>
             </div>
-        </section>
 
-        <section class="gait-cycles">
-            <h3>Gait Energy Images</h3>
-            <div class="gei-gallery">
-                {% if identity.gait_cycles %}
-                {% for cycle in identity.gait_cycles %}
-                <div class="gei-item">
-                    <div class="gei-image">
-                        <img src="data:image/jpeg;base64,{{ cycle.gei_image }}" alt="GEI for {{ identity.label }}">
-                    </div>
-                    <div class="gei-info">
-                        <span class="gei-date">{{ cycle.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
-                    </div>
+            <div class="access-control">
+                <h3>Access Control</h3>
+                <div class="toggle-container">
+                    <label class="toggle">
+                        <input type="checkbox" id="accessToggle" {{ 'checked' if identity.access_rule and
+                            identity.access_rule.rule else '' }} data-identity-id="{{ identity.id }}">
+                        <span class="slider"></span>
+                        <span class="toggle-label">Allow Access</span>
+                    </label>
                 </div>
-                {% endfor %}
+            </div>
+
+            <div class="gait-samples">
+                <h3>Gait Samples ({{ gait_cycles|length }})</h3>
+
+                {% if gait_cycles %}
+                <div class="sample-grid">
+                    {% for cycle in gait_cycles %}
+                    <div class="sample-card">
+                        <div class="sample-image">
+                            <img src="data:image/jpeg;base64,{{ cycle.gei_image }}" alt="GEI Sample">
+                        </div>
+                        <div class="sample-info">
+                            <div class="sample-date">{{ cycle.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                            <div class="sample-id">ID: {{ cycle.id }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
                 {% else %}
-                <div class="empty-state">
-                    <p>No gait cycles recorded for this identity.</p>
+                <div class="no-data-message">
+                    <p>No gait samples available for this identity.</p>
                 </div>
                 {% endif %}
             </div>
         </section>
     </main>
 
-    <!-- Edit Identity Modal -->
-    <div id="editIdentityModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Edit Identity</h2>
-                <span class="close-modal">&times;</span>
-            </div>
-            <form action="{{ url_for('update_identity', identity_id=identity.id) }}" method="POST">
-                <div class="form-group">
-                    <label for="label">Identity Name:</label>
-                    <input type="text" id="label" name="label" value="{{ identity.label }}" required>
-                </div>
-                <div class="form-group">
-                    <label for="access">Access Permission:</label>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="accessToggle" name="access" value="true" {% if identity.access_rule
-                            and identity.access_rule.rule %}checked{% endif %}>
-                        <label for="accessToggle"></label>
-                        <span class="toggle-label">{% if identity.access_rule and identity.access_rule.rule %}Allowed{%
-                            else %}Denied{% endif %}</span>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn">Cancel</button>
-                    <button type="submit" class="primary-btn">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <footer>
+        <p>&copy; Gait Recognition System</p>
+    </footer>
 
-    <!-- Delete Identity Confirmation Modal -->
-    <div id="deleteIdentityModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Delete Identity</h2>
-                <span class="close-modal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete <strong>{{ identity.label }}</strong>?</p>
-                <p>This will permanently remove all associated gait cycles and access rules.</p>
-            </div>
-            <div class="form-actions">
-                <button id="cancelDeleteBtn" class="cancel-btn">Cancel</button>
-                <form action="{{ url_for('delete_identity', identity_id=identity.id) }}" method="POST">
-                    <button type="submit" class="danger-btn">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
+    <script>
+        // Handle access toggle
+        document.getElementById('accessToggle').addEventListener('change', function (e) {
+            const identityId = this.dataset.identityId;
+            const allowAccess = this.checked;
 
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/identity.js') }}"></script>
+            fetch(`/api/access_rule/${identityId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    allow_access: allowAccess
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update UI to reflect the change
+                        const statusElement = document.querySelector('.identity-status');
+                        if (statusElement) {
+                            statusElement.textContent = allowAccess ? 'Access Allowed' : 'Access Denied';
+                            statusElement.className = 'identity-status ' + (allowAccess ? 'access-allowed' : 'access-denied');
+                        }
+                    } else {
+                        // Revert toggle if update failed
+                        this.checked = !allowAccess;
+                        alert('Failed to update access rule. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    this.checked = !allowAccess;
+                    alert('An error occurred. Please try again.');
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
 </html>

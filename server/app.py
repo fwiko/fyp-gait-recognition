@@ -62,15 +62,79 @@ with app.app_context():
 
 
 def extract_features(gei):
+    """Extract gait-specific features from GEI image"""
     if gei is None:
         return None
 
-    features = gei.flatten()
+    # Extract horizontal and vertical projections
+    h_proj = np.sum(gei, axis=1)
+    v_proj = np.sum(gei, axis=0)
+
+    # Extract center of mass
+    y_indices, x_indices = np.indices(gei.shape)
+    total_mass = np.sum(gei)
+    if total_mass > 0:
+        com_x = np.sum(x_indices * gei) / total_mass
+        com_y = np.sum(y_indices * gei) / total_mass
+    else:
+        com_x, com_y = gei.shape[1] // 2, gei.shape[0] // 2
+
+    # Extract width and height at different intensity levels
+    intensity_levels = [0.2, 0.4, 0.6, 0.8]
+    width_heights = []
+    for level in intensity_levels:
+        mask = gei >= level
+        if np.any(mask):
+            y_coords, x_coords = np.where(mask)
+            width = np.max(x_coords) - np.min(x_coords) if len(x_coords) > 0 else 0
+            height = np.max(y_coords) - np.min(y_coords) if len(y_coords) > 0 else 0
+            width_heights.extend([width, height])
+        else:
+            width_heights.extend([0, 0])
+
+    # Extract gait-specific features
+    # 1. Step length estimation (horizontal distance between feet)
+    left_side = np.sum(gei[:, : gei.shape[1] // 2])
+    right_side = np.sum(gei[:, gei.shape[1] // 2 :])
+    step_length = abs(left_side - right_side) / total_mass if total_mass > 0 else 0
+
+    # 2. Stride length (vertical distance between steps)
+    upper_half = np.sum(gei[: gei.shape[0] // 2, :])
+    lower_half = np.sum(gei[gei.shape[0] // 2 :, :])
+    stride_length = abs(upper_half - lower_half) / total_mass if total_mass > 0 else 0
+
+    # 3. Gait symmetry features
+    symmetry_x = (
+        np.sum(np.abs(gei - np.fliplr(gei))) / total_mass if total_mass > 0 else 0
+    )
+    symmetry_y = (
+        np.sum(np.abs(gei - np.flipud(gei))) / total_mass if total_mass > 0 else 0
+    )
+
+    # 4. Gait energy distribution
+    energy_dist = np.histogram(gei.flatten(), bins=10, range=(0, 1))[0]
+    energy_dist = (
+        energy_dist / np.sum(energy_dist) if np.sum(energy_dist) > 0 else energy_dist
+    )
+
+    # Combine all features
+    features = np.concatenate(
+        [
+            h_proj,  # Horizontal projection
+            v_proj,  # Vertical projection
+            [com_x, com_y],  # Center of mass
+            width_heights,  # Width and height at different intensities
+            [step_length, stride_length],  # Step and stride length
+            [symmetry_x, symmetry_y],  # Symmetry features
+            energy_dist,  # Energy distribution
+        ]
+    )
 
     return features
 
 
-def knn_classify(gei, confidence_threshold=75.0):
+def knn_classify(gei, confidence_threshold=75.0, k=5):
+    """Classify GEI using KNN with gait-specific features"""
     features = extract_features(gei)
     if features is None or features.size == 0:
         return "Unknown", 0
@@ -88,8 +152,25 @@ def knn_classify(gei, confidence_threshold=75.0):
         if cycle_features.size != features.size:
             continue
 
-        # Euclidean distance
-        dist = np.linalg.norm(features - cycle_features)
+        # Feature-specific weights
+        weights = np.ones_like(features)
+
+        # Higher weights for gait-specific features
+        proj_len = len(features) - 14  # Length of projections
+        weights[:proj_len] = 2.0  # Double weight for projections
+        weights[proj_len : proj_len + 2] = 1.5  # Center of mass
+        weights[proj_len + 2 : proj_len + 10] = 1.2  # Width/height features
+        weights[proj_len + 10 : proj_len + 12] = 1.8  # Step/stride length
+        weights[proj_len + 12 : proj_len + 14] = 1.5  # Symmetry features
+        weights[proj_len + 14 :] = 1.0  # Energy distribution
+
+        # Normalize weights
+        weights = weights / np.sum(weights)
+
+        # Calculate weighted Euclidean distance
+        diff = features - cycle_features
+        weighted_diff = diff * weights
+        dist = np.sqrt(np.sum(weighted_diff**2))
 
         # Assuming `identity` relationship is loaded
         label = cycle.identity.label if cycle.identity else None
@@ -108,44 +189,44 @@ def knn_classify(gei, confidence_threshold=75.0):
     std_dist = np.std(all_distances)
 
     # Get k nearest neighbors
-    k = min(3, len(distances))
+    k = min(k, len(distances))
     nearest = distances[:k]
 
-    # Count labels
+    # Count labels with distance-based weights
     label_counts = {}
+    total_weight = 0
     for dist, label in nearest:
         if label:
-            label_counts[label] = label_counts.get(label, 0) + 1
+            # Exponential weight decay based on distance
+            weight = np.exp(-dist / mean_dist) if mean_dist > 0 else 1.0
+            label_counts[label] = label_counts.get(label, 0) + weight
+            total_weight += weight
 
     if not label_counts:
         return "Unknown", 0
 
-    # Find most common label
+    # Find most common weighted label
     prediction = max(label_counts.items(), key=lambda x: x[1])[0]
+    prediction_weight = label_counts[prediction]
+
+    # Calculate confidence based on weighted votes and distance
+    vote_confidence = (prediction_weight / total_weight) * 100
 
     # Get matched distances
     matched_dists = [d for d, l in nearest if l == prediction]
     avg_match_dist = np.mean(matched_dists)
 
-    # Calculate Z-score (how many standard deviations from the mean)
-    # Smaller distances = larger z-scores = better matches
+    # Calculate Z-score
     if std_dist > 0:
         z_score = (mean_dist - avg_match_dist) / std_dist
     else:
         z_score = 0
 
-    # Convert Z-score to confidence (sigmoid function)
-    # This maps z-scores to a range of 0-100
-    # Z-score of 0 gives 50% confidence
-    # Positive z-scores (better than average) give >50%
-    # Negative z-scores (worse than average) give <50%
-    confidence = round(100 / (1 + np.exp(-z_score)), 2)
+    # Convert Z-score to confidence using sigmoid
+    distance_confidence = round(100 / (1 + np.exp(-z_score)), 2)
 
-    # Vote confidence component (how many neighbors voted for this label)
-    vote_confidence = (label_counts[prediction] / k) * 100
-
-    # Final confidence is a weighted average
-    final_confidence = round(0.7 * confidence + 0.3 * vote_confidence, 2)
+    # Final confidence is a weighted average with more emphasis on distance
+    final_confidence = round(0.7 * distance_confidence + 0.3 * vote_confidence, 2)
 
     # Apply confidence threshold
     if final_confidence < confidence_threshold:
@@ -164,7 +245,8 @@ def index():
 @app.route("/identity/<int:identity_id>")
 def view_identity(identity_id):
     identity = Identity.query.get_or_404(identity_id)
-    return render_template("identity.html", identity=identity)
+    gait_cycles = identity.gait_cycles
+    return render_template("identity.html", identity=identity, gait_cycles=gait_cycles)
 
 
 @app.route("/identity/<int:identity_id>/update", methods=["POST"])
@@ -305,6 +387,59 @@ def verify_gei():
         )
 
     except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/access_rules", methods=["GET"])
+def access_rules():
+    identities = Identity.query.all()
+    return render_template("access_rules.html", identities=identities)
+
+
+@app.route("/stats")
+def stats():
+    total_identities = Identity.query.count()
+    total_gait_cycles = GaitCycle.query.count()
+    latest_samples = (
+        db.session.query(
+            Identity.label, db.func.max(GaitCycle.created_at).label("latest_sample")
+        )
+        .join(GaitCycle)
+        .group_by(Identity.id)
+        .limit(5)
+        .all()
+    )
+
+    return render_template(
+        "stats.html",
+        total_identities=total_identities,
+        total_gait_cycles=total_gait_cycles,
+        latest_samples=latest_samples,
+    )
+
+
+@app.route("/api/access_rule/<int:identity_id>", methods=["PUT"])
+def update_access_rule(identity_id):
+    """API endpoint to update access rule for an identity"""
+    try:
+        data = request.json
+        if not data or "allow_access" not in data:
+            return jsonify({"success": False, "error": "Missing required data"}), 400
+
+        identity = Identity.query.get_or_404(identity_id)
+        allow_access = data["allow_access"]
+
+        if identity.access_rule:
+            identity.access_rule.rule = allow_access
+        else:
+            new_rule = AccessRule(identity_id=identity.id, rule=allow_access)
+            db.session.add(new_rule)
+
+        db.session.commit()
+        return jsonify({"success": True})
+
+    except Exception as e:
+        db.session.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
 
 

@@ -3,4 +3,4 @@ flask-socketio
 flask-sqlalchemy
 opencv-python
 numpy
-pickle
+requests
