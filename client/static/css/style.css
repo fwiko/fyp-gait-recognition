@@ -1,0 +1,215 @@
+:root {
+    /* Color variables */
+    --color-bg-main: #111;
+    --color-bg-secondary: #222;
+    --color-border: #333;
+    --color-text-primary: #eee;
+    --color-text-secondary: #ccc;
+    --color-text-muted: #888;
+    --color-accent-success: #9fdf9f;
+    --color-accent-error: #ff6b6b;
+    --color-accent-warning: #f0c674;
+    --color-button: #333;
+    --color-button-hover: #555;
+    
+    /* Spacing variables */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    
+    /* Border radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    
+    /* Camera view height */
+    --camera-view-height: 25rem;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--color-bg-main);
+    font-family: Arial, sans-serif;
+    color: var(--color-text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+header {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    padding: var(--space-sm);
+    text-align: center;
+    width: 100%;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    width: 100%;
+    max-width: 100rem;
+}
+
+.camera-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--space-lg);
+    margin: var(--space-lg) 0;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.camera-view {
+    background-color: var(--color-bg-secondary);
+    padding: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: var(--radius-md);
+    box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-border);
+}
+
+.camera-view img {
+    height: var(--camera-view-height);
+    width: auto;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* For empty camera views, set a default 16:11 aspect ratio placeholder */
+.camera-view img:not([src]),
+.camera-view img[src=""] {
+    height: var(--camera-view-height);
+    width: calc(var(--camera-view-height) * 16 / 11);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+    background-size: 2rem 2rem;
+}
+
+.label {
+    width: 100%;
+    margin-bottom: var(--space-sm);
+    font-weight: bold;
+    text-align: left;
+    color: var(--color-text-secondary);
+}
+
+.controls,
+.status-bar {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    width: 100%;
+    max-width: 60rem;
+    padding: var(--space-sm);
+}
+
+.status-bar {
+    align-items: center;
+}
+
+.status-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-secondary);
+    box-shadow: inset 0 0 0.25rem rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
+    flex-grow: 1;
+    max-width: 20rem;
+}
+
+.status-label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+}
+
+.status-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--color-accent-success);
+}
+
+.status-value.access-denied {
+    color: var(--color-accent-error);
+}
+
+.controls {
+    flex-wrap: wrap;
+}
+
+button {
+    background: var(--color-button);
+    color: var(--color-text-primary);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.4);
+    flex: 1;
+    min-width: 10rem;
+    max-width: 20rem;
+}
+
+button:hover {
+    background: var(--color-button-hover);
+    transform: translateY(-0.125rem);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 64rem) {
+    .camera-container {
+        gap: var(--space-sm);
+    }
+    
+    :root {
+        --camera-view-height: 20rem;
+    }
+}
+
+@media (max-width: 48rem) {
+    .controls,
+    .status-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .status-block,
+    button {
+        max-width: none;
+    }
+    
+    :root {
+        --camera-view-height: 18rem;
+    }
+}
