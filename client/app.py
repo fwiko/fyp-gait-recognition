@@ -3,6 +3,9 @@ import cv2
 import base64
 import threading
 import time
+import requests
+import json
+import numpy as np
 from datetime import datetime
 from flask import Flask, render_template
 from flask_socketio import SocketIO
@@ -18,50 +21,73 @@ state = {
     "reset_requested": False,
     "frame_counter": 0,  # Frame counter to track frames processed
     "gei_buffer": None,  # To store the latest GEI image
+    "last_saved_gei": None,  # To store the last saved GEI for comparison
 }
 
 # Define save directory for GEIs
 SAVE_DIR = "saved_geis"
 
 # Save GEI every 150 frames
-FRAME_INTERVAL = 150
+FRAME_INTERVAL = 30
 
 
-def save_gei_to_disk(gei):
-    """Save the GEI image to disk."""
-    try:
-        # Ensure the save directory exists
-        os.makedirs(SAVE_DIR, exist_ok=True)
+def is_different(gei_a, gei_b, threshold=5.0):
+    if gei_a is None or gei_b is None:
+        return True
 
-        # Create a filename with current timestamp
-        filename = f"gei_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
-        save_path = os.path.join(SAVE_DIR, filename)
+    if gei_a.shape != gei_b.shape:
+        return True
 
-        # Save the GEI image as a JPG file
-        _, buffer = cv2.imencode(".jpg", gei)
-        img_data = base64.b64encode(buffer).decode("utf-8")
-
-        # Save the image to the disk
-        with open(save_path, "wb") as f:
-            f.write(base64.b64decode(img_data))
-
-        print(f"Saved GEI at {save_path}")
-    except Exception as e:
-        print(f"Failed to save GEI: {e}")
+    diff = np.linalg.norm(gei_a.astype("float32") - gei_b.astype("float32"))
+    return diff > threshold
 
 
 def gei_save_thread():
-    """This thread will save the GEI every 150 frames."""
     while True:
         if state["frame_counter"] >= FRAME_INTERVAL:
-            print("Saving GEI to disk...")
-            if state["gei_buffer"] is not None:
-                # save_gei_to_disk(state["gei_buffer"])
-                pass
-            # Reset frame counter after saving
+            current_gei = state["gei_buffer"]
+            last_saved_gei = state["last_saved_gei"]
+
+            if current_gei is not None:
+                # Check if GEI has changed since last save
+                if is_different(current_gei, last_saved_gei):
+                    print("GEI has changed. Verifying...")
+
+                    _, buffer = cv2.imencode(".jpg", current_gei)
+                    gei_encoded = base64.b64encode(buffer).decode("utf-8")
+
+                    state["last_saved_gei"] = current_gei
+
+                    try:
+                        response = requests.post(
+                            "http://localhost:5001/api/verify",
+                            json={"gei": gei_encoded},
+                        )
+
+                        data = json.loads(response.content)
+                        print(data)
+
+                        socketio.emit("status", data)
+
+                        print(data["confidence"])
+
+                    except Exception as e:
+                        print(f"Failed to save GEI: {e}")
+
+                else:
+                    print("GEI unchanged. Skipping...")
+
+            # Reset frame counter
             state["frame_counter"] = 0
 
-        # Sleep to avoid high CPU usage
+        # socketio.emit(
+        #     "status",
+        #     {
+        #         "person": str(random.randint(0, 100000)),
+        #         "access": random.choice([True, False]),
+        #     },
+        # )
+
         time.sleep(1)
 
 
@@ -85,26 +111,23 @@ def main():
                 state["reset_requested"] = False
 
             if not state["background_init"]:
-                if processor.initialize_background(frame):
+                if processor.initialise_backround(frame):
                     state["background_init"] = True
                     print("Background initialized!")
                 continue
 
-            sil, gei = processor.process_frame(frame)
+            silhouette, gei = processor.process_frame(frame)
 
-            # Increment frame counter
             state["frame_counter"] += 1
+            state["gei_buffer"] = gei.copy() if gei is not None else None
 
-            # Store the GEI for saving later
-            state["gei_buffer"] = gei
-
-            # Send frames to frontend
-            for i, img in enumerate([frame, sil, gei]):
+            for i, img in enumerate([frame, silhouette, gei]):
                 _, buffer = cv2.imencode(".jpg", img)
                 img_encoded = base64.b64encode(buffer).decode("utf-8")
                 socketio.emit(f"frame{i}", img_encoded)
 
             cv2.waitKey(1)
+            time.sleep(0.03)
 
     finally:
         cam.stop()
@@ -131,15 +154,11 @@ def handle_save_gei(data):
         return
 
     try:
-        img_data = base64.b64decode(gei_base64)
-        filename = f"{label}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
-        save_path = os.path.join(SAVE_DIR, filename)
+        payload = {"label": label, "gei": gei_base64}
 
-        os.makedirs(SAVE_DIR, exist_ok=True)
-        with open(save_path, "wb") as f:
-            f.write(img_data)
+        response = requests.post("http://localhost:5001/api/register", json=payload)
+        print(response.content)
 
-        print(f"Saved GEI for '{label}' at {save_path}")
     except Exception as e:
         print(f"Failed to save GEI: {e}")
 

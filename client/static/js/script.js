@@ -15,6 +15,7 @@ socket.on('status', ({ person = 'Unknown', access }) => {
     document.getElementById('personName').textContent = person;
 
     const statusElement = document.getElementById('accessStatus');
+    console.log(access)
     statusElement.textContent = access ? 'Allowed' : 'Denied';
     statusElement.classList.toggle('access-denied', !access);
 });
