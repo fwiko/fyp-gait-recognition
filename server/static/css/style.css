@@ -1,0 +1,401 @@
+:root {
+    /* Colour variables */
+    --color-bg-main: #111;
+    --color-bg-secondary: #222;
+    --color-border: #333;
+    --color-text-primary: #eee;
+    --color-text-secondary: #ccc;
+    --color-text-muted: #888;
+    --color-accent-success: #9fdf9f;
+    --color-accent-error: #ff6b6b;
+    --color-accent-warning: #f0c674;
+    --color-button: #333;
+    --color-button-hover: #555;
+   
+    /* Spacing variables */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+   
+    /* Border radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+   
+    /* Camera view height */
+    --camera-view-height: 25rem;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--color-bg-main);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: var(--color-text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    line-height: 1.6;
+    padding: var(--space-sm);
+}
+
+header {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    padding: var(--space-sm);
+    text-align: center;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    margin-bottom: var(--space-lg);
+}
+
+h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+h2 {
+    margin-bottom: var(--space-sm);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Dashboard styles */
+.dashboard .section-header {
+    width: 100%;
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-lg);
+}
+
+.identity-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-lg);
+    width: 100%;
+}
+
+.identity-card {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.identity-card:hover {
+    transform: translateY(-0.2rem);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+}
+
+.identity-info h3 {
+    margin-bottom: var(--space-xs);
+}
+
+.identity-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-sm);
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.meta-label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.meta-value {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* System status card */
+.status-card {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.status-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.status-label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.status-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.status-value.access-denied {
+    color: var(--color-accent-error);
+}
+
+.status-value.access-allowed {
+    color: var(--color-accent-success);
+}
+
+/* Buttons */
+button {
+    background: var(--color-button);
+    color: var(--color-text-primary);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    flex: 1;
+    min-width: 10rem;
+    max-width: 20rem;
+}
+
+button:hover {
+    background: var(--color-button-hover);
+    transform: translateY(-0.125rem);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Camera view */
+.camera-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--space-lg);
+    margin: var(--space-lg) 0;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.camera-view {
+    background: var(--color-bg-secondary);
+    padding: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: var(--radius-md);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-border);
+}
+
+.camera-view img {
+    height: var(--camera-view-height);
+    width: auto;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* Placeholder for empty camera views */
+.camera-view img:not([src]),
+.camera-view img[src=""] {
+    height: var(--camera-view-height);
+    width: calc(var(--camera-view-height) * 16 / 11);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+    background-size: 2rem 2rem;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    color: var(--color-text-muted);
+    margin: var(--space-lg) 0;
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--color-bg-secondary);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+}
+
+.close-modal {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: var(--space-md);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-weight: bold;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-main);
+    color: var(--color-text-primary);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+}
+
+.cancel-btn {
+    background: var(--color-border);
+    color: var(--color-text-primary);
+}
+
+.primary-btn {
+    background: var(--color-accent-success);
+    color: var(--color-text-primary);
+}
+
+.danger-btn {
+    background: var(--color-accent-error);
+    color: var(--color-text-primary);
+}
+
+/* Toggle switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 1.5rem;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-switch input:checked + label {
+    background: var(--color-accent-success);
+}
+
+.toggle-label {
+    margin-left: var(--space-sm);
+    vertical-align: middle;
+}
+
+/* Back link in header */
+.back-link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    margin-top: var(--space-sm);
+    display: inline-block;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 64rem) {
+    .camera-container {
+        gap: var(--space-sm);
+    }
+   
+    :root {
+        --camera-view-height: 20rem;
+    }
+}
+
+@media (max-width: 48rem) {
+    .controls,
+    .status-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+   
+    .status-block,
+    button {
+        max-width: none;
+    }
+   
+    :root {
+        --camera-view-height: 18rem;
+    }
+}

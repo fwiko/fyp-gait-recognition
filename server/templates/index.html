@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gait Recognition Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header>
+        <h1>Gait Recognition: Access Control Server</h1>
+    </header>
+    <main>
+        <section class="dashboard">
+            <div class="section-header">
+                <h2>Registered Identities</h2>
+            </div>
+
+            <div class="identity-list">
+                {% if identities %}
+                {% for identity in identities %}
+                <div class="identity-card"
+                    onclick="location.href='{{ url_for('view_identity', identity_id=identity.id) }}'">
+                    <div class="identity-info">
+                        <h3>{{ identity.label }}</h3>
+                        <div class="identity-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Gait Cycles:</span>
+                                <span class="meta-value">{{ identity.gait_cycles|length }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Access:</span>
+                                <span
+                                    class="meta-value access-status {% if identity.access_rule and identity.access_rule.rule %}access-allowed{% else %}access-denied{% endif %}">
+                                    {% if identity.access_rule and identity.access_rule.rule %}Allowed{% else %}Denied{%
+                                    endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <p>No identities registered yet.</p>
+                    <p>Connect a client device or add identities manually.</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="connection-status">
+            <div class="status-card">
+                <h3>System Status</h3>
+                <div class="status-items">
+                    <div class="status-item">
+                        <span class="status-label">Connected Clients:</span>
+                        <span class="status-value" id="connectedClients">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Database Status:</span>
+                        <span class="status-value status-active">Active</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Last Activity:</span>
+                        <span class="status-value" id="lastActivity">Never</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
