@@ -2,53 +2,73 @@ import cv2
 import numpy as np
 from collections import deque
 
-NORMALIZED_SIZE = (88, 128)
-MAX_GEI_FRAMES = 30
-
-gei_frames = deque(maxlen=MAX_GEI_FRAMES)
-
 
 class GaitProcessor:
+    NORMALISED_WIDTH = 88
+    NORMALISED_HEIGHT = 128
+    MIN_CONTOUR_AREA = 500
+    MIN_ASPECT_RATIO = 1.5
+    MAX_ASPECT_RATIO = 2.5
+
     def __init__(self, initial_frames=30, buffer_size=30, alpha=0.2):
-        self.static_background = None
-        self.initial_frames = initial_frames
-        self.background_buffer = []
+        self.background_model = None
+        self.initial_frames_count = initial_frames
+        self.background_frames = []
         self.buffer_size = buffer_size
         self.alpha = alpha
+        self.aligned_buffer = deque(maxlen=buffer_size) if buffer_size > 0 else []
+        self.aligned_gei = None
 
-        if buffer_size == 0:
-            self.silhouette_buffer = []
-        else:
-            self.silhouette_buffer = deque(maxlen=buffer_size)
-
-        self.gait_energy_image = None
-
-    def initialize_background(self, frame):
+    def initialise_backround(self, frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        self.background_buffer.append(gray)
+        self.background_frames.append(gray)
 
-        if len(self.background_buffer) >= self.initial_frames:
-            self.static_background = np.median(self.background_buffer, axis=0).astype(
+        if len(self.background_frames) >= self.initial_frames_count:
+            self.background_model = np.median(self.background_frames, axis=0).astype(
                 np.uint8
             )
-            self.background_buffer = []
+            self.background_frames = []
             return True
 
         return False
 
     def reset_background(self):
-        self.gait_energy_image = None
-        self.background_buffer.clear()
+        self.background_model = None
+        self.background_frames.clear()
+        self.aligned_gei = None
+
+        if hasattr(self.aligned_buffer, "clear"):
+            self.aligned_buffer.clear()
+        else:
+            self.aligned_buffer = []
 
     def process_frame(self, frame):
-        if self.static_background is None:
-            return None, None, None, None
+        if self.background_model is None:
+            return None, None
 
+        silhouette, bounding_box = self._extract_silhouette(frame)
+
+        if bounding_box is not None:
+            self._draw_bounding_box(frame, bounding_box)
+
+            aligned_silhouette = self._align_silhouette(silhouette, bounding_box)
+            if aligned_silhouette is not None:
+                self._update_gei(aligned_silhouette)
+
+        if self.aligned_gei is not None:
+            gei = (self.aligned_gei * 255).astype(np.uint8)
+        else:
+            gei = np.zeros(
+                (self.NORMALISED_HEIGHT, self.NORMALISED_WIDTH), dtype=np.uint8
+            )
+
+        return silhouette, gei
+
+    def _extract_silhouette(self, frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (3, 3), 0)
 
-        diff = cv2.absdiff(self.static_background, gray)
-
+        diff = cv2.absdiff(self.background_model, gray)
         _, binary = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)
 
         silhouette = cv2.morphologyEx(
@@ -58,109 +78,95 @@ class GaitProcessor:
         contours, _ = cv2.findContours(
             silhouette, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
-        large_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > 500]
+        large_contours = [
+            cnt for cnt in contours if cv2.contourArea(cnt) > self.MIN_CONTOUR_AREA
+        ]
 
-        clean_silhouette = np.zeros_like(silhouette)
-        cv2.drawContours(clean_silhouette, large_contours, -1, 255, -1)
+        filtered_silhouette = np.zeros_like(silhouette)
+        cv2.drawContours(filtered_silhouette, large_contours, -1, 255, -1)
 
-        color_silhouette = np.zeros_like(frame)
-        color_silhouette[clean_silhouette == 255] = (255, 255, 255)
-
+        bounding_box = None
         if large_contours:
             largest_contour = max(large_contours, key=cv2.contourArea)
-
             x, y, w, h = cv2.boundingRect(largest_contour)
 
-            bounding_colour = (0, 255, 0) if h > w else (0, 0, 255)
+            aspect_ratio = h / w
+            if self.MIN_ASPECT_RATIO <= aspect_ratio <= self.MAX_ASPECT_RATIO:
+                bounding_box = (x, y, w, h)
 
-            cv2.rectangle(frame, (x, y), (x + w, y + h), bounding_colour, 2)
-            cv2.rectangle(color_silhouette, (x, y), (x + w, y + h), bounding_colour, 2)
+        return filtered_silhouette, bounding_box
 
-            mask = np.zeros(color_silhouette.shape[:2], dtype=np.uint8)
-            cv2.rectangle(mask, (x, y), (x + w, y + h), 255, -2)
+    def _align_silhouette(self, silhouette, bounding_box):
+        x, y, w, h = bounding_box
 
-            color_silhouette = cv2.bitwise_and(
-                color_silhouette, color_silhouette, mask=mask
-            )
+        person_region = silhouette[y : y + h, x : x + w]
 
-            if h > w:
-                person_roi = clean_silhouette[y : y + h, x : x + w]
+        ty, tx = np.where(person_region > 0)
 
-                ty, tx = np.where(person_roi > 0)
+        if len(ty) == 0 or len(tx) == 0:
+            return None
 
-                if len(ty) > 0 and len(tx) > 0:
-                    sy, ey = ty.min(), ty.max() + 1
-                    sx, ex = tx.min(), tx.max() + 1
+        sy, ey = ty.min(), ty.max() + 1
+        sx, ex = tx.min(), tx.max() + 1
 
-                    silhouette_h = ey - sy
-                    silhouette_w = ex - sx
+        silhouette_h = ey - sy
+        silhouette_w = ex - sx
 
-                    if silhouette_h > silhouette_w:
-                        cx = int(tx.mean())
+        if silhouette_h <= silhouette_w:
+            return None
 
-                        cenX = silhouette_h // 2
-                        start_w = (silhouette_h - silhouette_w) // 2
+        cx = int(tx.mean())
+        cenX = silhouette_h // 2
+        start_w = (silhouette_h - silhouette_w) // 2
 
-                        if max(cx - sx, ex - cx) < cenX:
-                            start_w = cenX - (cx - sx)
+        if max(cx - sx, ex - cx) < cenX:
+            start_w = cenX - (cx - sx)
 
-                        square_silhouette = np.zeros(
-                            (silhouette_h, silhouette_h), np.uint8
-                        )
-                        square_silhouette[:, start_w : start_w + silhouette_w] = (
-                            person_roi[sy:ey, sx:ex]
-                        )
+        square_silhouette = np.zeros((silhouette_h, silhouette_h), np.uint8)
+        square_silhouette[:, start_w : start_w + silhouette_w] = person_region[
+            sy:ey, sx:ex
+        ]
 
-                        offsetX = 20
-                        resized_silhouette = cv2.resize(
-                            square_silhouette, (128, 128), interpolation=cv2.INTER_AREA
-                        )
-                        normalized_silhouette = resized_silhouette[
-                            :, offsetX : offsetX + 88
-                        ]
+        resized_silhouette = cv2.resize(
+            square_silhouette,
+            (self.NORMALISED_HEIGHT, self.NORMALISED_HEIGHT),
+            interpolation=cv2.INTER_AREA,
+        )
 
-                        if not hasattr(self, "normalized_buffer"):
-                            if self.buffer_size == 0:
-                                self.normalized_buffer = []
-                            else:
-                                self.normalized_buffer = deque(maxlen=self.buffer_size)
+        offsetX = 20
+        normalised_silhouette = resized_silhouette[
+            :, offsetX : offsetX + self.NORMALISED_WIDTH
+        ]
 
-                        normalized_frame = normalized_silhouette.astype(float) / 255.0
-                        if self.buffer_size == 0:
-                            self.normalized_buffer.append(normalized_frame)
-                        else:
-                            self.normalized_buffer.append(normalized_frame)
+        return normalised_silhouette.astype(float) / 255.0
 
-                        if not hasattr(self, "normalized_gei"):
-                            self.normalized_gei = None
-
-                        if (
-                            self.buffer_size == 0
-                            or len(self.normalized_buffer) == self.buffer_size
-                        ):
-                            if self.normalized_gei is None:
-                                self.normalized_gei = np.mean(
-                                    self.normalized_buffer, axis=0
-                                )
-                            else:
-                                new_norm_gei = np.mean(self.normalized_buffer, axis=0)
-                                self.normalized_gei = (
-                                    1 - self.alpha
-                                ) * self.normalized_gei + self.alpha * new_norm_gei
-
-        if self.buffer_size == 0 or len(self.silhouette_buffer) == self.buffer_size:
-            if self.gait_energy_image is None:
-                self.gait_energy_image = np.mean(self.silhouette_buffer, axis=0)
-            else:
-                new_gei = np.mean(self.silhouette_buffer, axis=0)
-                self.gait_energy_image = (
-                    1 - self.alpha
-                ) * self.gait_energy_image + self.alpha * new_gei
-
-        norm_gei = None
-        if hasattr(self, "normalized_gei") and self.normalized_gei is not None:
-            norm_gei = (self.normalized_gei * 255).astype(np.uint8)
+    def _update_gei(self, aligned_silhouette):
+        if isinstance(self.aligned_buffer, deque):
+            self.aligned_buffer.append(aligned_silhouette)
         else:
-            norm_gei = np.zeros((128, 64, 3), dtype=np.uint8)
+            self.aligned_buffer.append(aligned_silhouette)
 
-        return color_silhouette, norm_gei
+        if self.buffer_size == 0 or len(self.aligned_buffer) == self.buffer_size:
+            if self.aligned_gei is None:
+                self.aligned_gei = np.mean(self.aligned_buffer, axis=0)
+            else:
+                new_gei = np.mean(self.aligned_buffer, axis=0)
+                self.aligned_gei = (
+                    1 - self.alpha
+                ) * self.aligned_gei + self.alpha * new_gei
+
+    def _draw_bounding_box(self, frame, bounding_box):
+        x, y, w, h = bounding_box
+        aspect_ratio = h / w
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+        label = f"AR: {aspect_ratio:.2f}"
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.5
+        thickness = 1
+        text_size, _ = cv2.getTextSize(label, font, font_scale, thickness)
+        text_x, text_y = (x + 5, y + text_size[1] + 5)
+
+        cv2.putText(
+            frame, label, (text_x, text_y), font, font_scale, (255, 255, 255), thickness
+        )
