@@ -8,8 +8,8 @@ class Identity(db.Model):
     __tablename__ = "Identities"
     id = db.Column(db.Integer, primary_key=True)
     label = db.Column(db.String(50), nullable=False)
-    gait_cycles = db.relationship(
-        "GaitCycle", backref="identity", lazy=True, cascade="all, delete-orphan"
+    gait_samples = db.relationship(
+        "GaitSample", backref="identity", lazy=True, cascade="all, delete-orphan"
     )
     access_rule = db.relationship(
         "AccessRule",
@@ -20,8 +20,8 @@ class Identity(db.Model):
     )
 
 
-class GaitCycle(db.Model):
-    __tablename__ = "GaitCycles"
+class GaitSample(db.Model):
+    __tablename__ = "GaitSamples"
     id = db.Column(db.Integer, primary_key=True)
     identity_id = db.Column(db.Integer, db.ForeignKey("Identities.id"), nullable=False)
     gei_image = db.Column(db.Text, nullable=False)
