@@ -1,6 +1,7 @@
-import cv2
 import threading
 import time
+
+import cv2
 
 
 class Camera:

@@ -1,15 +1,16 @@
-import os
-import cv2
 import base64
+import json
+import os
 import threading
 import time
-import requests
-import json
-import numpy as np
 from datetime import datetime
+
+import cv2
+import numpy as np
+import requests
+from camera import Camera
 from flask import Flask, render_template
 from flask_socketio import SocketIO
-from camera import Camera
 from gait import GaitProcessor
 
 app = Flask(__name__)
