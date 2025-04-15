@@ -85,6 +85,9 @@ def register_socket_events(socketio):
             db.session.delete(identity)
             db.session.commit()
 
+            # Update the PCA model after deleting an identity
+            update_model()
+
             emit("identity_deleted", {"success": True})
 
         except Exception as e:
@@ -116,6 +119,9 @@ def register_socket_events(socketio):
             # Delete the gait sample
             db.session.delete(sample)
             db.session.commit()
+
+            # Update the PCA model after deleting a gait sample
+            update_model()
 
             emit("gait_sample_deleted", {"success": True, "sample_id": sample_id})
 
