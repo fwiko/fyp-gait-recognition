@@ -75,7 +75,7 @@ def gei_save_thread():
             if current_gei is not None:
                 # Check if GEI has changed since last save
                 if is_different(current_gei, last_saved_gei):
-                    print("GEI has changed. Verifying...")
+                    print("GEI has changed. Classifying...")
 
                     _, buffer = cv2.imencode(".jpg", current_gei)
                     gei_encoded = base64.b64encode(buffer).decode("utf-8")
@@ -84,7 +84,7 @@ def gei_save_thread():
 
                     try:
                         response = requests.post(
-                            "http://localhost:5001/api/verify",
+                            "http://localhost:5001/api/classify",
                             json={"gei": gei_encoded},
                         )
 
@@ -104,19 +104,11 @@ def gei_save_thread():
             # Reset frame counter
             state["frame_counter"] = 0
 
-        # socketio.emit(
-        #     "status",
-        #     {
-        #         "person": str(random.randint(0, 100000)),
-        #         "access": random.choice([True, False]),
-        #     },
-        # )
-
         time.sleep(1)
 
 
 def main():
-    cam = Camera()
+    cam = Camera(camera_id=1)
     cam.start()
 
     processor = GaitProcessor(buffer_size=30)
