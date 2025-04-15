@@ -1,8 +1,9 @@
 import os
+
 from flask import Flask
 from flask_socketio import SocketIO
-from routes import routes, register_socket_events
 from models import db
+from routes import register_socket_events, routes
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(

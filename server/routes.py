@@ -1,12 +1,13 @@
-from flask import Blueprint, request, render_template, jsonify
-from datetime import datetime
 import base64
-import cv2
 import pickle
+from datetime import datetime
+
+import cv2
 import numpy as np
-from models import db, Identity, GaitSample, AccessRule, ActivityLog
-from gait import extract_features, update_model, classify
+from flask import Blueprint, jsonify, render_template, request
 from flask_socketio import emit
+from gait import classify, extract_features, update_model
+from models import AccessRule, ActivityLog, GaitSample, Identity, db
 
 routes = Blueprint("routes", __name__)
 

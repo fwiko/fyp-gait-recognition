@@ -1,12 +1,12 @@
-import numpy as np
-import pickle
-import cv2
 import base64
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import cosine_similarity
-from models import GaitSample, GaitModel, db
+import pickle
 
+import cv2
+import numpy as np
+from models import GaitModel, GaitSample, db
+from sklearn.decomposition import PCA
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.applications import VGG16
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.models import Model
