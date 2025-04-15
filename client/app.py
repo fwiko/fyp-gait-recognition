@@ -12,18 +12,11 @@ from camera import Camera
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from gait import GaitProcessor
+from routes import register_socket_events, routes
+from state import state  # Import the shared state
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
-
-# Shared state between threads
-state = {
-    "background_init": False,
-    "reset_requested": False,
-    "frame_counter": 0,  # Frame counter to track frames processed
-    "gei_buffer": None,  # To store the latest GEI image
-    "last_saved_gei": None,  # To store the last saved GEI for comparison
-}
 
 # Define save directory for GEIs
 SAVE_DIR = "saved_geis"
@@ -151,36 +144,8 @@ def main():
         cv2.destroyAllWindows()
 
 
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-
-@socketio.on("reset")
-def handle_reset():
-    state["reset_requested"] = True
-
-
-@socketio.on("save")
-def handle_save_gei(data):
-    label = data.get("label")
-    gei_base64 = data.get("gei")
-
-    if not label or not gei_base64:
-        print("Invalid GEI save request.")
-        return
-
-    try:
-        payload = {"label": label, "gei": gei_base64}
-
-        response = requests.post("http://localhost:5001/api/register", json=payload)
-        print(response.content)
-
-    except Exception as e:
-        print(f"Failed to save GEI: {e}")
-
-    state["reset_requested"] = True
-
+register_socket_events(socketio)
+app.register_blueprint(routes)
 
 if __name__ == "__main__":
     threading.Thread(target=gei_save_thread, daemon=True).start()
