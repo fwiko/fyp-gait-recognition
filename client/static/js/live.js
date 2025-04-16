@@ -3,8 +3,11 @@ const socket = io();
 let frame0 = document.getElementById('frame0');
 let frame1 = document.getElementById('frame1');
 let frame2 = document.getElementById('frame2');
-let personName = document.getElementById('personName');
-let accessStatus = document.getElementById('accessStatus');
+
+let person = document.getElementById('person');
+let access = document.getElementById('access');
+let confidence = document.getElementById('confidence');
+
 let resetBtn = document.getElementById('resetBtn');
 let saveBtn = document.getElementById('saveBtn');
 
@@ -21,9 +24,10 @@ socket.on('frame2', data => {
 
 socket.on('status', (data) => {
     if (data.person) {
-        personName.textContent = data.person;
-        accessStatus.textContent = data.access ? 'Granted' : 'Denied';
-        accessStatus.classList.toggle('access-denied', !data.access);
+        person.textContent = data.person;
+        access.textContent = data.access ? 'Granted' : 'Denied';
+        access.classList.toggle('access-denied', !data.access);
+        confidence.textContent = person.textContent === 'Unknown' ? 'N/A' : (result.confidence !== undefined ? `${result.confidence}%` : 'Unknown');
     }
 });
 

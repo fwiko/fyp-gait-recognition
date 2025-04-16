@@ -1,6 +1,12 @@
 let currentImage = null;
 const imageInput = document.getElementById('imageInput');
 
+
+let person = document.getElementById('person');
+let access = document.getElementById('access');
+let confidence = document.getElementById('confidence');
+let previewImage = document.getElementById('previewImage');
+
 document.getElementById('imageInput').addEventListener('change', async (e) => {
     e.preventDefault();
 
@@ -27,12 +33,11 @@ document.getElementById('imageInput').addEventListener('change', async (e) => {
             }
             const result = await response.json();
             console.log(result);
-            document.getElementById('personResult').textContent = result.person || 'Unknown';
-            document.getElementById('confidenceResult').textContent =
-                result.confidence !== undefined ? `${result.confidence}%` : 'N/A';
-            document.getElementById('accessResult').textContent =
-                result.access ? 'Allowed' : 'Denied';
-            document.getElementById('previewImage').src = currentImage;
+            person.textContent = result.person || 'Unknown';
+            confidence.textContent = person.textContent === 'Unknown' ? 'N/A' : (result.confidence !== undefined ? `${result.confidence}%` : 'Unknown');
+            access.textContent = result.access ? 'Granted' : 'Denied';
+            access.classList.toggle('access-denied', !result.access);
+            previewImage.src = currentImage;
         } catch (error) {
             console.error('Error:', error);
             alert('Classification failed. Please try again.');

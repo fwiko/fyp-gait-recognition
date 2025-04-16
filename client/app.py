@@ -46,7 +46,7 @@ def classification_thread():
                     state["last_saved_gei"] = current_gei
 
                     response, message = api_client.classify_gei(gei_base64)
-
+                    print(response)
                     if not response:
                         print(f"Failed to classify GEI: {message}")
                     else:
