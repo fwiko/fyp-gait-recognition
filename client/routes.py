@@ -1,8 +1,10 @@
-import requests
+import base64
 from flask import Blueprint, render_template
-from state import state  # Import the shared state
+from state import state
+from server_api import ServerAPIClient
 
 routes = Blueprint("routes", __name__)
+api_client = ServerAPIClient()
 
 
 def register_socket_events(socketio):
@@ -20,10 +22,16 @@ def register_socket_events(socketio):
             return
 
         try:
-            payload = {"label": label, "gei": gei_base64}
+            # Decode the base64 image to bytes
+            gei_bytes = base64.b64decode(gei_base64)
 
-            response = requests.post("http://localhost:5001/api/register", json=payload)
-            print(response.content)
+            # Use the API client to register the GEI
+            success, error = api_client.register_gei(gei_bytes, label)
+
+            if error:
+                print(f"Failed to save GEI: {error}")
+            else:
+                print("GEI saved successfully")
 
         except Exception as e:
             print(f"Failed to save GEI: {e}")

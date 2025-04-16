@@ -1,123 +1,86 @@
 import base64
-import json
-import os
 import threading
 import time
-from datetime import datetime
 
 import cv2
 import numpy as np
-import requests
 from camera import Camera
-from flask import Flask, render_template
+from flask import Flask
 from flask_socketio import SocketIO
 from gait import GaitProcessor
 from routes import register_socket_events, routes
-from state import state  # Import the shared state
+from server_api import ServerAPIClient
+from state import state
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
+api_client = ServerAPIClient()
 
-# Define save directory for GEIs
-SAVE_DIR = "saved_geis"
 
-# Save GEI every 30 frames (increased from 10)
 FRAME_INTERVAL = 30
 
-# Maximum number of samples per identity
-MAX_SAMPLES_PER_IDENTITY = 20
 
-
-def is_different(gei_a, gei_b, threshold=15.0):  # Increased from 5.0
+def is_different(gei_a, gei_b, threshold=15.0):
     if gei_a is None or gei_b is None:
         return True
 
     if gei_a.shape != gei_b.shape:
         return True
 
-    # Calculate structural similarity index
     diff = np.linalg.norm(gei_a.astype("float32") - gei_b.astype("float32"))
     return diff > threshold
 
 
-def save_gei(gei, label):
-    """Save GEI image with label"""
-    if not os.path.exists(SAVE_DIR):
-        os.makedirs(SAVE_DIR)
-
-    # Check if we've reached the maximum samples for this identity
-    existing_samples = len(
-        [f for f in os.listdir(SAVE_DIR) if f.startswith(f"{label}_")]
-    )
-    if existing_samples >= MAX_SAMPLES_PER_IDENTITY:
-        print(f"Maximum samples reached for {label}")
-        return
-
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{label}_{timestamp}.jpg"
-    filepath = os.path.join(SAVE_DIR, filename)
-    cv2.imwrite(filepath, gei)
-    print(f"Saved GEI to {filepath}")
-
-
-def gei_save_thread():
+def classification_thread():
     while True:
         if state["frame_counter"] >= FRAME_INTERVAL:
             current_gei = state["gei_buffer"]
             last_saved_gei = state["last_saved_gei"]
 
             if current_gei is not None:
-                # Check if GEI has changed since last save
                 if is_different(current_gei, last_saved_gei):
                     print("GEI has changed. Classifying...")
 
                     _, buffer = cv2.imencode(".jpg", current_gei)
-                    gei_encoded = base64.b64encode(buffer).decode("utf-8")
+                    gei_bytes = buffer.tobytes()
 
                     state["last_saved_gei"] = current_gei
 
-                    try:
-                        response = requests.post(
-                            "http://localhost:5001/api/classify",
-                            json={"gei": gei_encoded},
-                        )
+                    result, error = api_client.classify_gei(gei_bytes)
 
-                        data = json.loads(response.content)
-                        print(data)
-
-                        socketio.emit("status", data)
-
-                        print(data["confidence"])
-
-                    except Exception as e:
-                        print(f"Failed to save GEI: {e}")
+                    if error:
+                        print(f"Failed to classify GEI: {error}")
+                    else:
+                        socketio.emit("status", result)
 
                 else:
                     print("GEI unchanged. Skipping...")
 
-            # Reset frame counter
             state["frame_counter"] = 0
 
         time.sleep(1)
 
 
 def main():
-    cam = Camera(camera_id=1)
+    cam = Camera(camera_id=0)
     cam.start()
 
     processor = GaitProcessor(buffer_size=30)
 
     try:
         while True:
+            if len(socketio.server.eio.sockets) == 0:
+                time.sleep(0.1)
+                continue
+
             frame = cam.get_frame()
             if frame is None:
                 continue
 
-            # Handle reset from UI
             if state["reset_requested"]:
                 print("Reset requested from frontend. Reinitializing background...")
                 state["background_init"] = False
-                processor.reset_background()  # You need to define this method in GaitProcessor
+                processor.reset_background()
                 state["reset_requested"] = False
 
             if not state["background_init"]:
@@ -137,7 +100,7 @@ def main():
                 socketio.emit(f"frame{i}", img_encoded)
 
             cv2.waitKey(1)
-            time.sleep(0.03)
+            time.sleep(0.02)
 
     finally:
         cam.stop()
@@ -148,7 +111,7 @@ register_socket_events(socketio)
 app.register_blueprint(routes)
 
 if __name__ == "__main__":
-    threading.Thread(target=gei_save_thread, daemon=True).start()
+    threading.Thread(target=classification_thread, daemon=True).start()
 
     threading.Thread(target=main, daemon=True).start()
 

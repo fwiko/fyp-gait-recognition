@@ -38,7 +38,7 @@ class Camera:
             if ret:
                 with self.lock:
                     self.current_frame = frame
-            time.sleep(0.01)
+            time.sleep(0.02)
 
     def get_frame(self):
         with self.lock:
