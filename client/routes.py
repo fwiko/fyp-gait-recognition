@@ -1,7 +1,8 @@
 import base64
+
 from flask import Blueprint, render_template
-from state import state  # Import the shared state
 from server_api import ServerAPIClient  # Import the API client
+from state import state  # Import the shared state
 
 routes = Blueprint("routes", __name__)
 api_client = ServerAPIClient()  # Initialize the API client

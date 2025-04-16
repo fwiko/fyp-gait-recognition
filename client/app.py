@@ -9,8 +9,8 @@ from flask import Flask
 from flask_socketio import SocketIO
 from gait import GaitProcessor
 from routes import register_socket_events, routes
-from state import state
 from server_api import ServerAPIClient
+from state import state
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")

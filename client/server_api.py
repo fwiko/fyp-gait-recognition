@@ -1,7 +1,8 @@
-import requests
 import base64
 import json
 from typing import Dict, Optional, Tuple
+
+import requests
 
 
 class ServerAPIClient:
