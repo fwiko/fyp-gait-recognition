@@ -34,6 +34,6 @@ resetBtn.addEventListener('click', () => {
 saveBtn.addEventListener('click', () => {
     const label = prompt('Enter label for this GEI:');
     if (label) {
-        socket.emit('save', { label });
+        socket.emit('save', { label: label, gei: window.latestGEI });
     }
 });
