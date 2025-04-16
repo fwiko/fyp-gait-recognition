@@ -102,8 +102,10 @@ main {
 /* For empty camera views, set a default 16:11 aspect ratio placeholder */
 .camera-view img:not([src]),
 .camera-view img[src=""] {
-    height: var(--camera-view-height);
-    width: calc(var(--camera-view-height) * 16 / 11);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
     background-size: 2rem 2rem;
 }
