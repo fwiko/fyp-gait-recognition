@@ -146,6 +146,54 @@ def view_identity(identity_id) -> str:
     )
 
 
+@routes.route("/stats")
+def stats() -> str:
+    total_identities = Identity.query.count()
+    total_gait_samples = GaitSample.query.count()
+
+    # Get recent activity logs
+    recent_activity = (
+        ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(20).all()
+    )
+
+    # Format activity logs for display
+    formatted_logs = []
+    for log in recent_activity:
+        timestamp = log.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        details = eval(log.details) if log.details else {}
+
+        if log.activity_type == "register":
+            label = details.get("label", "Unknown")
+            message = f"Registered new gait sample for {label}"
+        elif log.activity_type == "delete":
+            label = details.get("label", "Unknown")
+            if details.get("type") == "identity":
+                message = f"Deleted identity: {label}"
+            else:
+                message = f"Deleted gait sample for {label}"
+        elif log.activity_type == "access_change":
+            label = details.get("label", "Unknown")
+            new_state = "granted" if details.get("new_state") else "denied"
+            message = f"Access {new_state} for {label}"
+        elif log.activity_type == "identify":
+            label = details.get("label", "Unknown")
+            confidence = details.get("confidence", 0)
+            message = f"Identified as {label} (confidence: {confidence}%)"
+        else:
+            message = f"Unknown activity"
+
+        formatted_logs.append(
+            {"timestamp": timestamp, "message": message, "type": log.activity_type}
+        )
+
+    return render_template(
+        "stats.html",
+        total_identities=total_identities,
+        total_gait_samples=total_gait_samples,
+        activity_logs=formatted_logs,
+    )
+
+
 # API Endpoints
 @routes.route("/api/register", methods=["POST"])
 def register_gei() -> tuple[jsonify, int]:
@@ -276,51 +324,3 @@ def classify_gei() -> tuple[jsonify, int]:
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-
-
-@routes.route("/stats")
-def stats() -> str:
-    total_identities = Identity.query.count()
-    total_gait_samples = GaitSample.query.count()
-
-    # Get recent activity logs
-    recent_activity = (
-        ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(20).all()
-    )
-
-    # Format activity logs for display
-    formatted_logs = []
-    for log in recent_activity:
-        timestamp = log.created_at.strftime("%Y-%m-%d %H:%M:%S")
-        details = eval(log.details) if log.details else {}
-
-        if log.activity_type == "register":
-            label = details.get("label", "Unknown")
-            message = f"Registered new gait sample for {label}"
-        elif log.activity_type == "delete":
-            label = details.get("label", "Unknown")
-            if details.get("type") == "identity":
-                message = f"Deleted identity: {label}"
-            else:
-                message = f"Deleted gait sample for {label}"
-        elif log.activity_type == "access_change":
-            label = details.get("label", "Unknown")
-            new_state = "granted" if details.get("new_state") else "denied"
-            message = f"Access {new_state} for {label}"
-        elif log.activity_type == "identify":
-            label = details.get("label", "Unknown")
-            confidence = details.get("confidence", 0)
-            message = f"Identified as {label} (confidence: {confidence}%)"
-        else:
-            message = f"Unknown activity"
-
-        formatted_logs.append(
-            {"timestamp": timestamp, "message": message, "type": log.activity_type}
-        )
-
-    return render_template(
-        "stats.html",
-        total_identities=total_identities,
-        total_gait_samples=total_gait_samples,
-        activity_logs=formatted_logs,
-    )

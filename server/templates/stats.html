@@ -1,64 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistics - Gait Recognition Management</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+{% block title %}Gait Recognition: Statistics & Logs{% endblock %}
 
-<body>
-    <header>
-        <h1>Gait Recognition: System Statistics</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('routes.index') }}">Home</a></li>
-                <li><a href="{{ url_for('routes.stats') }}" class="active">Statistics</a></li>
-            </ul>
-        </nav>
-    </header>
+{% block header %}Gait Recognition: Statistics & Logs{% endblock %}
 
-    <main>
-        <section class="stats-section">
-            <h2>System Statistics</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">{{ total_identities }}</div>
-                    <div class="stat-label">Registered Identities</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ total_gait_samples }}</div>
-                    <div class="stat-label">Total Gait Samples</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ (total_identities > 0) and (total_gait_samples /
-                        total_identities)|round|int or 0 }}</div>
-                    <div class="stat-label">Avg. Samples per Identity</div>
-                </div>
-            </div>
+{% block content %}
+<section class="stats-section">
+    <h2>System Statistics</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_identities }}</div>
+            <div class="stat-label">Registered Identities</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_gait_samples }}</div>
+            <div class="stat-label">Total Gait Samples</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ (total_identities > 0) and (total_gait_samples /
+                total_identities)|round|int or 0 }}</div>
+            <div class="stat-label">Avg. Samples per Identity</div>
+        </div>
+    </div>
 
-            <div class="stats-charts">
-                <div class="chart-container">
-                    <h3>Recent Activity</h3>
-                    <div class="recent-activity">
-                        <div class="log-entries">
-                            {% for log in activity_logs %}
-                            <div class="log-entry {{ log.type }}">
-                                <span class="timestamp">{{ log.timestamp }}</span>
-                                <span class="message">{{ log.message }}</span>
-                            </div>
-                            {% endfor %}
-                        </div>
+    <div class="stats-charts">
+        <div class="chart-container">
+            <h3>Recent Activity</h3>
+            <div class="recent-activity">
+                <div class="log-entries">
+                    {% for log in activity_logs %}
+                    <div class="log-entry {{ log.type }}">
+                        <span class="timestamp">{{ log.timestamp }}</span>
+                        <span class="message">{{ log.message }}</span>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024/25 Nottingham Trent University and Rafferty Isaac Simms</p>
-    </footer>
-</body>
-
-</html>
+        </div>
+    </div>
+</section>
+{% endblock %}

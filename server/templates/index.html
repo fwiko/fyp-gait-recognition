@@ -1,129 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gait Recognition Management</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
+{% block title %}Gait Recognition: Server Home{% endblock %}
 
-<body>
-    <header>
-        <h1>Gait Recognition: Management Portal</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('routes.index') }}">Home</a></li>
-                <li><a href="{{ url_for('routes.stats') }}">Statistics</a></li>
-            </ul>
-        </nav>
-    </header>
+{% block header %}Gait Recognition: Server Home{% endblock %}
 
-    <main>
-        <section class="dashboard-section">
-            <h2>Registered Identities</h2>
+{% block content %}
+<section class="dashboard-section">
+    <h2>Registered Identities</h2>
 
-            <div class="identity-grid">
-                {% if identities %}
-                {% for identity in identities %}
-                <a href="{{ url_for('routes.view_identity', identity_id=identity.id) }}" class="identity-card-link">
-                    <div class="identity-card">
-                        <div class="identity-header">
-                            <h3>{{ identity.label }}</h3>
-                        </div>
+    <div class="identity-grid">
+        {% if identities %}
+        {% for identity in identities %}
+        <a href="{{ url_for('routes.view_identity', identity_id=identity.id) }}" class="identity-card-link">
+            <div class="identity-card">
+                <div class="identity-header">
+                    <h3>{{ identity.label }}</h3>
+                </div>
 
-                        {% set latest_gei = identity.gait_samples[-1] if identity.gait_samples else None %}
-                        {% if latest_gei %}
-                        <div class="identity-gei">
-                            <img src="data:image/jpeg;base64,{{ latest_gei.gei_image }}"
-                                alt="GEI for {{ identity.label }}">
-                        </div>
-                        <div class="identity-meta">
-                            <div class="meta-content">
-                                <div>Samples: {{ identity.gait_samples|length }}</div>
-                                <div>Latest: {{ latest_gei.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
-                            </div>
-                            <div class="identity-status {{ 'access-allowed' if identity.access_rule and identity.access_rule.rule else 'access-denied' }}"
-                                style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center;">
-                                <i
-                                    class="fas {{ 'fa-check-circle' if identity.access_rule and identity.access_rule.rule else 'fa-times-circle' }}"></i>
-                            </div>
-                        </div>
-                        {% else %}
-                        <div class="identity-gei empty-gei">
-                            <div class="no-data">No GEI data</div>
-                        </div>
-                        <div class="identity-meta">
-                            <div class="meta-content">
-                                <div>No samples available</div>
-                            </div>
-                            <div class="identity-status {{ 'access-allowed' if identity.access_rule and identity.access_rule.rule else 'access-denied' }}"
-                                style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center;">
-                                <i
-                                    class="fas {{ 'fa-check-circle' if identity.access_rule and identity.access_rule.rule else 'fa-times-circle' }}"></i>
-                            </div>
-                        </div>
-                        {% endif %}
+                {% set latest_gei = identity.gait_samples[-1] if identity.gait_samples else None %}
+                {% if latest_gei %}
+                <div class="identity-gei">
+                    <img src="data:image/jpeg;base64,{{ latest_gei.gei_image }}" alt="GEI for {{ identity.label }}">
+                </div>
+                <div class="identity-meta">
+                    <div class="meta-content">
+                        <div>Samples: {{ identity.gait_samples|length }}</div>
+                        <div>Latest: {{ latest_gei.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
                     </div>
-                </a>
-                {% endfor %}
+                    <div class="identity-status {{ 'access-allowed' if identity.access_rule and identity.access_rule.rule else 'access-denied' }}"
+                        style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center;">
+                        <i
+                            class="fas {{ 'fa-check-circle' if identity.access_rule and identity.access_rule.rule else 'fa-times-circle' }}"></i>
+                    </div>
+                </div>
                 {% else %}
-                <div class="no-data-message">
-                    <p>No identities registered yet.</p>
+                <div class="identity-gei empty-gei">
+                    <div class="no-data">No GEI data</div>
+                </div>
+                <div class="identity-meta">
+                    <div class="meta-content">
+                        <div>No samples available</div>
+                    </div>
+                    <div class="identity-status {{ 'access-allowed' if identity.access_rule and identity.access_rule.rule else 'access-denied' }}"
+                        style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center;">
+                        <i
+                            class="fas {{ 'fa-check-circle' if identity.access_rule and identity.access_rule.rule else 'fa-times-circle' }}"></i>
+                    </div>
                 </div>
                 {% endif %}
             </div>
-        </section>
-    </main>
+        </a>
+        {% endfor %}
+        {% else %}
+        <div class="no-data-message">
+            <p>No identities registered yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
 
-    <footer>
-        <p>&copy; 2024/25 Nottingham Trent University and Rafferty Isaac Simms</p>
-    </footer>
-
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>
-        // Handle access toggles
-        document.querySelectorAll('.access-toggle').forEach(toggle => {
-            toggle.addEventListener('change', function (e) {
-                const identityId = this.dataset.identityId;
-                const allowAccess = this.checked;
-
-                fetch(`/api/access_rule/${identityId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        allow_access: allowAccess
-                    }),
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Update status to reflect the change
-                            const statusElement = this.closest('.identity-status');
-                            if (statusElement) {
-                                // Update the text content
-                                const textNode = statusElement.childNodes[0];
-                                textNode.textContent = allowAccess ? 'Access Allowed' : 'Access Denied';
-                                // Update the class
-                                statusElement.className = 'identity-status ' + (allowAccess ? 'access-allowed' : 'access-denied');
-                            }
-                        } else {
-                            // Revert toggle if update failed
-                            this.checked = !allowAccess;
-                            alert('Failed to update access rule. Please try again.');
-                        }
-                    })
-                    .catch(error => {
-                        this.checked = !allowAccess;
-                        alert('An error occurred. Please try again.');
-                        console.error('Error:', error);
-                    });
-            });
-        });
-    </script>
-</body>
-
-</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}
