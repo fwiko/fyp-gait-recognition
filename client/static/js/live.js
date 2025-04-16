@@ -27,7 +27,15 @@ socket.on('status', (data) => {
         person.textContent = data.person;
         access.textContent = data.access ? 'Granted' : 'Denied';
         access.classList.toggle('access-denied', !data.access);
-        confidence.textContent = person.textContent === 'Unknown' ? 'N/A' : (result.confidence !== undefined ? `${result.confidence}%` : 'Unknown');
+
+        if (data.person === 'Unknown') {
+            confidence.textContent = 'N/A';
+        } else if (data.confidence !== undefined) {
+            confidence.textContent = `${data.confidence}%`;
+        } else {
+            confidence.textContent = 'Unknown';
+        }
+
     }
 });
 
