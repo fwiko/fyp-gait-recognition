@@ -154,13 +154,15 @@ main {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-
-    padding: var(--space-sm);
     border: 3px dashed var(--color-highlight);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+}
+
+.view #imageInputLabel:hover {
+    opacity: 0.5;
 }
 
 .view input[type=file]:active, 
