@@ -31,7 +31,7 @@ def is_different(gei_a, gei_b, threshold=15.0):
     return diff > threshold
 
 
-def gei_save_thread():
+def classification_thread():
     while True:
         if state["frame_counter"] >= FRAME_INTERVAL:
             current_gei = state["gei_buffer"]
@@ -111,7 +111,7 @@ register_socket_events(socketio)
 app.register_blueprint(routes)
 
 if __name__ == "__main__":
-    threading.Thread(target=gei_save_thread, daemon=True).start()
+    threading.Thread(target=classification_thread, daemon=True).start()
 
     threading.Thread(target=main, daemon=True).start()
 
