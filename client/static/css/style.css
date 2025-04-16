@@ -11,6 +11,7 @@
     --color-accent-warning: #f0c674;
     --color-button: #333;
     --color-button-hover: #555;
+    --color-highlight: #007bff;
     
     /* Spacing variables */
     --space-xs: 0.5rem;
@@ -153,9 +154,9 @@ main {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.25;
+
     padding: var(--space-sm);
-    border: 3px dotted var(--color-border);
+    border: 3px dashed var(--color-highlight);
     display: flex;
     align-items: center;
     justify-content: center;

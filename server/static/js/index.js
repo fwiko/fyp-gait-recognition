@@ -44,7 +44,7 @@ socket.on('access_rule_updated', function (data) {
         if (statusElement) {
             // Update only the text node, preserving the toggle
             const textNode = statusElement.childNodes[0];
-            textNode.textContent = data.allow_access ? 'Access Allowed' : 'Access Denied';
+            textNode.textContent = data.allow_access ? 'Access: Allowed' : 'Access: Denied';
             statusElement.className = 'identity-status ' + (data.allow_access ? 'access-allowed' : 'access-denied');
         }
     } else {

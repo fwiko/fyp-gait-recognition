@@ -6,9 +6,13 @@ let person = document.getElementById('person');
 let access = document.getElementById('access');
 let confidence = document.getElementById('confidence');
 let previewImage = document.getElementById('previewImage');
+let originalSrc = previewImage.src;
 
 document.getElementById('imageInput').addEventListener('change', async (e) => {
     e.preventDefault();
+
+    previewImage.src = '';
+    previewImage.alt = 'Loading...';
 
     const imageFile = imageInput.files[0];
     const reader = new FileReader();
@@ -43,5 +47,29 @@ document.getElementById('imageInput').addEventListener('change', async (e) => {
             alert('Classification failed. Please try again.');
         }
     }
+});
 
-})
+const dropArea = document.getElementById('imageInputLabel');
+const fileInput = document.getElementById('imageInput');
+
+
+// Drag & Drop events
+dropArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropArea.classList.add('dragover');
+});
+
+dropArea.addEventListener('dragleave', () => {
+    dropArea.classList.remove('dragover');
+});
+
+dropArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+
+    if (e.dataTransfer.files.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        const event = new Event('change', { bubbles: true });
+        fileInput.dispatchEvent(event);
+    }
+});

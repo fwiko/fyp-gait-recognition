@@ -17,8 +17,7 @@
         <div class="header-actions">
             <div
                 class="identity-status {{ 'access-allowed' if identity.access_rule and identity.access_rule.rule else 'access-denied' }}">
-                {{ "Access Allowed" if identity.access_rule and identity.access_rule.rule else "Access Denied"
-                }}
+                Access: {{"Allowed" if identity.access_rule and identity.access_rule.rule else "Denied"}}
                 <label class="toggle">
                     <input type="checkbox" id="accessToggle" {{ 'checked' if identity.access_rule and
                         identity.access_rule.rule else '' }} data-identity-id="{{ identity.id }}">
