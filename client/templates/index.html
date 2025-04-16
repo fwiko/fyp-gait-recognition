@@ -1,54 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access Control Interface</title>
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+{% block title %}Gait Recognition: Live Demo{% endblock %}
 
-<body>
-    <header>
-        <h1>Gait Recognition: Access Control Client</h1>
-    </header>
-    <main>
-        <section class="camera-container">
-            <div class="camera-view">
-                <div class="label">Live Feed</div>
-                <img id="cam0" src="" alt="Live Camera Feed">
-            </div>
-            <div class="camera-view">
-                <div class="label">Silhouette</div>
-                <img id="cam1" src="" alt="Background Subtracted">
-            </div>
-            <div class="camera-view">
-                <div class="label">Gait Energy Image</div>
-                <img id="cam2" src="" alt="GEI">
-            </div>
-        </section>
+{% block header %}Gait Recognition: Live Demo{% endblock %}
+{% block content %}
+<section class="camera-container">
+    <div class="camera-view">
+        <div class="label">Live Feed</div>
+        <img id="frame0" src="" alt="Live Camera Feed">
+    </div>
+    <div class="camera-view">
+        <div class="label">Silhouette</div>
+        <img id="frame1" src="" alt="Background Subtracted">
+    </div>
+    <div class="camera-view">
+        <div class="label">Gait Energy Image</div>
+        <img id="frame2" src="" alt="GEI">
+    </div>
+</section>
 
-        <section class="status-bar">
-            <div class="status-block">
-                <div class="status-label">Person</div>
-                <div class="status-value" id="personName">Unknown</div>
-            </div>
-            <div class="status-block">
-                <div class="status-label">Access</div>
-                <div class="status-value access-denied" id="accessStatus">Denied</div>
-            </div>
-        </section>
+<section class="status-bar">
+    <div class="status-block">
+        <div class="status-label">Person</div>
+        <div class="status-value" id="personName">Unknown</div>
+    </div>
+    <div class="status-block">
+        <div class="status-label">Access</div>
+        <div class="status-value access-denied" id="accessStatus">Denied</div>
+    </div>
+</section>
 
-        <section class="controls">
-            <button type="button" id="resetBtn" onclick="reset()">Reset Background</button>
-            <button type="button" id="saveBtn" onclick="save()">Save Identity</button>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024/25 Nottingham Trent University and Rafferty Isaac Simms</p>
-    </footer>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
-
-</html>
+<section class="controls">
+    <button type="button" id="resetBtn">Reset Background</button>
+    <button type="button" id="saveBtn">Save Identity</button>
+</section>
+{% endblock %}
