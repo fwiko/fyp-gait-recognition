@@ -39,22 +39,18 @@ def classification_thread():
 
             if current_gei is not None:
                 if is_different(current_gei, last_saved_gei):
-                    print("GEI has changed. Classifying...")
 
                     _, buffer = cv2.imencode(".jpg", current_gei)
-                    gei_bytes = buffer.tobytes()
+                    gei_base64 = base64.b64encode(buffer).decode("utf-8")
 
                     state["last_saved_gei"] = current_gei
 
-                    result, error = api_client.classify_gei(gei_bytes)
+                    response, message = api_client.classify_gei(gei_base64)
 
-                    if error:
-                        print(f"Failed to classify GEI: {error}")
+                    if not response:
+                        print(f"Failed to classify GEI: {message}")
                     else:
-                        socketio.emit("status", result)
-
-                else:
-                    print("GEI unchanged. Skipping...")
+                        socketio.emit("status", response)
 
             state["frame_counter"] = 0
 
@@ -69,7 +65,13 @@ def main():
 
     try:
         while True:
-            if len(socketio.server.eio.sockets) == 0:
+            connected_clients = [
+                sid
+                for sid, environ in socketio.server.environ.items()
+                if environ.get("HTTP_REFERER", "").endswith("/")
+            ]
+
+            if len(socketio.server.eio.sockets) == 0 or not connected_clients:
                 time.sleep(0.1)
                 continue
 
@@ -78,7 +80,6 @@ def main():
                 continue
 
             if state["reset_requested"]:
-                print("Reset requested from frontend. Reinitializing background...")
                 state["background_init"] = False
                 processor.reset_background()
                 state["reset_requested"] = False

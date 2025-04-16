@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Gait Recognition: Manual Classification Demo{% endblock %}
+
+{% block header %}Gait Recognition: Manual Classification Demo{% endblock %}
+
+{% block content %}
+<section class="container">
+    <div class="view">
+        <div class="label">File Upload</div>
+        <input type="file" id="imageInput" accept="image/*">
+    </div>
+    <div class="view">
+        <div class="label">Classified Image</div>
+        <img id="previewImage" src="" alt="GEI Preview">
+    </div>
+</section>
+
+<section class="status-bar">
+    <div class="status-block">
+        <div class="status-label">Person</div>
+        <div class="status-value" id="personResult">Unknown</div>
+    </div>
+    <div class="status-block">
+        <div class="status-label">Confidence</div>
+        <div class="status-value" id="confidenceResult">N/A</div>
+    </div>
+    <div class="status-block">
+        <div class="status-label">Access</div>
+        <div class="status-value access-denied" id="accessResult">N/A</div>
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/manual.js') }}"></script>
+{% endblock %}

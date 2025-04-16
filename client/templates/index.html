@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Gait Recognition: Live Demo{% endblock %}
+{% block title %}Gait Recognition: Live Classification Demo{% endblock %}
 
-{% block header %}Gait Recognition: Live Demo{% endblock %}
+{% block header %}Gait Recognition: Live Classification Demo{% endblock %}
 {% block content %}
-<section class="camera-container">
-    <div class="camera-view">
+<section class="container">
+    <div class="view">
         <div class="label">Live Feed</div>
         <img id="frame0" src="" alt="Live Camera Feed">
     </div>
-    <div class="camera-view">
+    <div class="view">
         <div class="label">Silhouette</div>
         <img id="frame1" src="" alt="Background Subtracted">
     </div>
-    <div class="camera-view">
+    <div class="view">
         <div class="label">Gait Energy Image</div>
         <img id="frame2" src="" alt="GEI">
     </div>
@@ -34,4 +34,7 @@
     <button type="button" id="resetBtn">Reset Background</button>
     <button type="button" id="saveBtn">Save Identity</button>
 </section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src="{{ url_for('static', filename='js/live.js') }}"></script>
 {% endblock %}

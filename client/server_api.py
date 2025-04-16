@@ -36,11 +36,8 @@ class ServerAPIClient:
         except Exception as e:
             return False, f"Unexpected error: {str(e)}"
 
-    def classify_gei(self, gei_image: bytes) -> Tuple[Optional[Dict], Optional[str]]:
+    def classify_gei(self, gei_base64: str) -> Tuple[Optional[Dict], Optional[str]]:
         try:
-            # Encode the image to base64
-            gei_base64 = base64.b64encode(gei_image).decode("utf-8")
-
             # Prepare the payload
             payload = {"gei": gei_base64}
 

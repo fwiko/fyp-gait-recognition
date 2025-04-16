@@ -1,11 +1,11 @@
 import base64
 
-from flask import Blueprint, render_template
-from server_api import ServerAPIClient  # Import the API client
-from state import state  # Import the shared state
+from flask import Blueprint, jsonify, render_template, request
+from server_api import ServerAPIClient
+from state import state
 
 routes = Blueprint("routes", __name__)
-api_client = ServerAPIClient()  # Initialize the API client
+api_client = ServerAPIClient()
 
 
 def register_socket_events(socketio):
@@ -23,16 +23,12 @@ def register_socket_events(socketio):
             return
 
         try:
-            # Decode the base64 image to bytes
             gei_bytes = base64.b64decode(gei_base64)
 
-            # Use the API client to register the GEI
-            success, error = api_client.register_gei(gei_bytes, label)
+            _, message = api_client.register_gei(gei_bytes, label)
 
-            if error:
-                print(f"Failed to save GEI: {error}")
-            else:
-                print("GEI saved successfully")
+            if message:
+                print(f"Failed to save GEI: {message}")
 
         except Exception as e:
             print(f"Failed to save GEI: {e}")
@@ -43,3 +39,29 @@ def register_socket_events(socketio):
 @routes.route("/")
 def index():
     return render_template("index.html")
+
+
+@routes.route("/manual")
+def manual():
+    return render_template("manual.html")
+
+
+@routes.route("/api/classify", methods=["POST"])
+def classify_gei():
+    try:
+        # Get the base64 image from the request
+        data = request.get_json()
+
+        if not data or "gei" not in data:
+            return jsonify({"error": "No GEI image provided"}), 400
+
+        # Use the API client to classify the GEI
+        response, message = api_client.classify_gei(data["gei"])
+
+        if not response:
+            return jsonify({"error": message}), 500
+
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
