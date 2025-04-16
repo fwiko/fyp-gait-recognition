@@ -9,8 +9,8 @@ from flask import Flask
 from flask_socketio import SocketIO
 from gait import GaitProcessor
 from routes import register_socket_events, routes
-from server_api import ServerAPIClient
 from state import state
+from server_api import ServerAPIClient
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
@@ -31,7 +31,7 @@ def is_different(gei_a, gei_b, threshold=15.0):
     return diff > threshold
 
 
-def classification_thread():
+def gei_save_thread():
     while True:
         if state["frame_counter"] >= FRAME_INTERVAL:
             current_gei = state["gei_buffer"]
@@ -100,7 +100,7 @@ def main():
                 socketio.emit(f"frame{i}", img_encoded)
 
             cv2.waitKey(1)
-            time.sleep(0.02)
+            time.sleep(0.03)
 
     finally:
         cam.stop()
@@ -111,7 +111,7 @@ register_socket_events(socketio)
 app.register_blueprint(routes)
 
 if __name__ == "__main__":
-    threading.Thread(target=classification_thread, daemon=True).start()
+    threading.Thread(target=gei_save_thread, daemon=True).start()
 
     threading.Thread(target=main, daemon=True).start()
 
