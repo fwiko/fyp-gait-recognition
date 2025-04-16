@@ -140,18 +140,33 @@ main {
 }
 
 .view input[type=file] {
+    display: none;
+}
+
+.view #imageInputLabel {
     height: var(--view-height);
     aspect-ratio: 1;
     object-fit: contain;
     border-radius: var(--radius-sm);
     background-color: rgba(0, 0, 0, 0.2);
+    background-image: url('');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.25;
     padding: var(--space-sm);
+    border: 3px dotted var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
 .view input[type=file]:active, 
 .view input[type=file]:focus, 
 .view input[type=file]:hover {
     background-color: var(--color-button-hover);
+    cursor: pointer;
 }
 
 .view input[type=file]::file-selector-button {
