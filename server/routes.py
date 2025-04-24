@@ -29,7 +29,7 @@ def register_socket_events(socketio):
 
             identity = Identity.query.get_or_404(identity_id)
             old_state = identity.access_rule.rule if identity.access_rule else False
-            identity_label = identity.label  # Store label before any changes
+            identity_label = identity.label
 
             if identity.access_rule:
                 identity.access_rule.rule = allow_access
@@ -72,21 +72,17 @@ def register_socket_events(socketio):
                 return
 
             identity = Identity.query.get_or_404(identity_id)
-            identity_label = identity.label  # Store label before deletion
 
-            # Log the deletion activity
             activity_log = ActivityLog(
                 activity_type="delete",
-                details=str({"label": identity_label}),
+                details=str({"label": identity.label}),
                 created_at=datetime.now(),
             )
             db.session.add(activity_log)
 
-            # Delete the identity and its associated records
             db.session.delete(identity)
             db.session.commit()
 
-            # Update the PCA model after deleting an identity
             update_model()
 
             emit("identity_deleted", {"success": True})
@@ -151,12 +147,8 @@ def stats() -> str:
     total_identities = Identity.query.count()
     total_gait_samples = GaitSample.query.count()
 
-    # Get recent activity logs
-    recent_activity = (
-        ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(20).all()
-    )
+    recent_activity = ActivityLog.query.order_by(ActivityLog.created_at.desc()).all()
 
-    # Format activity logs for display
     formatted_logs = []
     for log in recent_activity:
         timestamp = log.created_at.strftime("%Y-%m-%d %H:%M:%S")
