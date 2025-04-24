@@ -23,20 +23,18 @@ socket.on('frame2', data => {
 });
 
 socket.on('status', (data) => {
-    if (data.person) {
-        person.textContent = data.person;
-        access.textContent = data.access ? 'Granted' : 'Denied';
-        access.classList.toggle('access-denied', !data.access);
-
-        if (data.person === 'Unknown') {
-            confidence.textContent = 'N/A';
-        } else if (data.confidence !== undefined) {
-            confidence.textContent = `${data.confidence}%`;
-        } else {
-            confidence.textContent = 'Unknown';
-        }
-
+    if (data.confidence < 75) {
+        confidence.textContent = 'N/A';
+        access.textContent = 'Denied';
+        access.classList.toggle('access-denied', true);
+        person.textContent = 'Unknown';
+        return;
     }
+
+    person.textContent = data.person;
+    access.textContent = data.access ? 'Granted' : 'Denied';
+    access.classList.toggle('access-denied', !data.access);
+    confidence.textContent = `${data.confidence}%`;
 });
 
 resetBtn.addEventListener('click', () => {

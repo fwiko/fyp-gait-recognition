@@ -25,7 +25,7 @@ def register_socket_events(socketio):
         try:
             gei_bytes = base64.b64decode(gei_base64)
 
-            _, message = api_client.register_gei(gei_bytes, label)
+            _, message = api_client.register_gei(gei_bytes, label) # Submit a registration request to the Gait Recognition Server
 
             if message:
                 print(f"Failed to save GEI: {message}")
@@ -49,14 +49,12 @@ def manual():
 @routes.route("/api/classify", methods=["POST"])
 def classify_gei():
     try:
-        # Get the base64 image from the request
         data = request.get_json()
 
         if not data or "gei" not in data:
             return jsonify({"error": "No GEI image provided"}), 400
 
-        # Use the API client to classify the GEI
-        response, message = api_client.classify_gei(data["gei"])
+        response, message = api_client.classify_gei(data["gei"]) # Submit a classification request to the Gait Recognition Server
 
         if not response:
             return jsonify({"error": message}), 500
