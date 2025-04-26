@@ -1,0 +1,37 @@
+\section{Evaluation Summary and Feasibility Discussion}
+\label{sec:project-evaluation}
+
+This project has resulted in a working \ac{poc} of a \ac{gr}-based authentication system, with a registration, and passive authentication process.
+It uses an appearance-based \ac{gr} approach, capturing movement data and creating \acp{gei} to represent statistical and spatiotemporal gait features in a single image.
+A \ac{ml}-based approach was taken to feature extraction and classification, using \ac{cnn} and \ac{pca}, followed by cosine similarity for final predictions.
+This allowed for a confidence score to be generated for each prediction, with a 75\% threshold set for an 'acceptable' prediction.
+
+Prediction accuracy of the system was found to be \ac{pca} 96.24\%, with a post-threshold 'acceptable' prediction accuracy of 72.04\%, and the above the threshold being 99.26\%.
+These results are promising, with the highest accuracies sitting beside the >90\% accuracies of facial, fingerprint, and iris recognition discussed in Chapter \ref{chap:context}.
+
+The speed of registration and classification also met targets, with the average identity registration time sitting at 2.6 seconds, and the average classification time at 11.5 seconds.
+This could be considered acceptable, as if for example, a \ac{gr} authentication system was installed in a hallway, a user could be identified and authenticated within the 30 seconds it takes to walk towards the entrance.
+
+Although only a \ac{poc}, the final solution is suprisingly functional.
+The main issue encountered during testing involved the contrast level between the background and test subject, which could lead to inconsistent results.
+This issue can compared to problems experienced with facial recognition systems, where lighting level can affect accuracy.
+Additionally, the scope of the project and tests predominantly focused on lateral movement, with little acknowledgement of other directions. 
+Other angles may be more susceptible to occlusion, affecting accuracy (e.g., frontal views have less variance).
+Varying clothing and footwear may also have an impact, although this system supports multiple gait samples per identity, so this may be mitigated by collecting more data (e.g., \acp{gei} captured from different angles, at different gradients, or when wearing different clothing).
+If being implemented in a real-world environment, these issues would need addressing, which may involve tightening tolerances for background subtraction, or using a different \ac{gr} approach (e.g., model-based), and collecting much more data.
+
+User feedback was generally positive, with volunteers finding the registration process easy to follow, and the passive authentication process convenient.
+There were some outliers in opinion, the main concerns relating to privacy and the potential for this type of technology to be used for surveillance.
+
+Adoption of \ac{gr}-based authentication in the real-world seems feasible, with issues pertaining to either inconsistent data collection, or ethics.
+Solving the first, as discussed, would involve further research and development to improve robustness, while the second would require clear transparency and assurances about how data is handled (e.g., through legislation) --- but what if the governments are the ones leveraging the technology?
+
+Overall, this project has successfully demonstrated \ac{gr}-based authentication, justifying its proposed use in \ac{pacs} and possibly other applications.
+
+
+
+
+
+
+
+

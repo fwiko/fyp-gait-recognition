@@ -1,0 +1,53 @@
+\section{Introduction}
+\label{sec:context-introduction}
+
+This chapter evaluates existing examples of \acp{pacs} and their associated authentication methods.
+Security and usability-based issues encountered with traditional \ac{pacs} are discussed, with comparisons made to systems newer, biometric-based solutions.
+
+Following this, the convenience and obtrusiveness of, as well as ethical concerns relating to common biometric authentication solutions is assessed.
+A proposition is then made for using a less intrusive biometric factor, \ac{gr}, to enable less obtrusive, 'transparent' authentication for \ac{pacs} --- aiming to reduce user burden while maintaining security.
+
+\paragraph{Key Resources}
+While many resources contributed to this review, the most relevant articles are listed below in Table \ref{tbl:literature-review-resources}, with details on what they contribute, what may be missing, and how this research could build upon their findings.
+
+\scriptsize
+\begin{xltabular}{\textwidth}{|Y|Y|Y|Y|}
+    \caption{Key Literature Review Resources}
+    \label{tbl:literature-review-resources}\\
+    \hline
+    \textbf{Resource(s)} & \textbf{Contributions} & \textbf{Gaps and Issues} & \textbf{New Ideas} \\
+    \hline
+    \endfirsthead
+    \caption*{Key Literature Review Resources (Continued)} \\
+    \hline
+    \textbf{Resource(s)} & \textbf{Contributions} & \textbf{Gaps and Issues} & \textbf{New Ideas} \\
+    \hline
+    \endhead
+    \hline
+    \endfoot
+
+    \pprbcite{ifsecglobal2022StatePhysical2022,ifsecglobalStatePhysicalAccess2024} & Identifies trends in the \ac{pacs} market and discusses how issues with traditional technologies may have triggered the (slow) migration to biometric solutions by organisations. & Does not acknowledge \ac{gr} as a viable option for biometric \ac{pacs} authentication, indicating it is rarely (or never) used in this context. & The gait (walking style) behavioral biometric could serve as an alternative for identity verification compared to facial recognition, fingerprint, and iris recognition. \\
+
+
+    \pprbcite{verkadaGuideSecurePhysical2024,maxsentiWhatPhysicalAccess2023} & Covers both traditional and emerging \ac{pacs} methods such as \ac{rfid} and smartphone-based authentication, highlighting vulnerabilities and disadvantages like the risk of credential theft and the need to constantly carry physical items. & Recommendations for alternatives remain token-based, albeit more secure; however, biometrics are not discussed in detail. & Inherence factor-based authentication (e.g., \ac{gr} proposed here) enhances security and usability, reducing the risk of credential theft and eliminating the need for users to carry physical items. \\
+
+    \hline
+
+    \pprbcite{prabhakarBiometricRecognitionSecurity2003,parliamentaryofficeofscienceandtechnologyBiometricDataMisuse2024} & Covers the types of data that enable different forms of biometric identification, reporting how detail, distinctivness, and permanence varies between approaches and relates to privacy. & Gait is not covered as a potential biometric identifier by these reports. & Comparisons can be made between methods covered by these reports and \ac{gr} to highlight the contrast in invasiveness and obtrusiveness, potentially reducing (not eliminating) privacy concerns, and improving usability. \\
+
+    \hline
+
+    \pprbcite{nationalinstituteofstandardsandtechnologyNISTEvaluatesFace2021,nationalinstituteofstandardsandtechnologyNISTStudyShows2004,universityofbaghdadHighaccuracyModelsIris2024} & Details accuracies of the three (3) most common \ac{pacs} biometrics: face, fingerprint, and iris. Conveys how accuracy increases with the amount of data available for analysis. & Emphasises how most systems require the active participation of subjects and cannot operate passively from distance --- a potential time sink. & Gap in the market for \ac{pacs} solutions that take enable passive identification. \ac{cv} based \ac{gr} could be a solution, authenticating subjects from a distance, without active participation. \\
+
+    \pprbcite{leslieUnderstandingBiasFacial2020,moyHowPoliceTechnology2019,uwazuruikePoliceUseLive2025} & Highlights bias-related issues in biometrics, like facial recognition models trained on unbalanced data, negatively impacting minorities (e.g., darker skin complexions or women).  Conveys the importance in collecting diverse datasets to reduce the proliferation of biases by \ac{ml}. & The most prevalent biometric-related biases involve race and sex, impacting faceial and voice recognition systems the most. These reports do not address how or if gait is affected by these biases. & \ac{ml} for \ac{gr} still requires datasets to be collected for training. However, there are less opportunities for bias; diversity in race is of less importance, with a greater focus on balancing sex and having a range of ages. \\
+
+    \hline
+
+    \pprbcite{stepscanGaitAuthenticationSecurity2020} & Introduces a \ac{gr} based \ac{pacs} solution that uses under-floor pressure sensors to assess gait. & The cost of hardware increases the greater the size of the area that must be covered, outweighing the benefits of using \ac{gr} for large-scale applications. & Take advantage of \ac{cv} to enable \ac{gr} to be used for identification from greater distances, at a lower cost, providing a \ac{mvp} demonstration using minimal harware. \\
+
+    \hline
+
+    \pprbcite{chrisburtPopEyeStrengthenEU2024} & Introduces a European Union consortium proposal for \ac{gr}-based authentication to be used at border crossings in an attempt tp speed up processing times using \ac{cv}-based solutions. & The experiment is not yet complete with results unpublished. There have been no updates as of October 2024. & This research relates to what the EU consortium is attempting to achieve and could help demonstrate feasibility among other things.
+\end{xltabular}
+\normalsize
+

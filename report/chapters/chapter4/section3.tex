@@ -1,0 +1,120 @@
+\section{Technologies Used and Techniques Applied}
+\label{sec:technologies-used-and-techniques-applied}
+
+\subsection{Choice of Gait-Recognition Approach}
+\label{subsec:choice-of-gait-recognition-approach}
+
+Two main forms of \ac{gr} are discussed in Chapter \ref{chap:context} and \ref{chap:new-ideas}:
+Appearance (e.g., silhouette, GEI), and Model-based (e.g., 2 or 3-dimensional skeletons).
+To settle on the most suitable approach to use for this project (not just for efficacy;
+the project needed to be completed within the given timeframe and able to operate on available hardware)
+benchmarks were performed to evaluate the technologies required to implement either approach.
+
+The same system was used to perform all benchmarking, ensuring results could be compared directly and would represent system performance.
+As a target of this project is for the solution to be efficient enough to run on 'consumer'-grade (low-medium cost and power) hardware,
+the system used for these tests --- an LG 16Z90P laptop --- was of no significant cost, and was only equipped with an integrated \ac{gpu}.
+
+Specifications of this system relevant to performance are detailed in Table \ref{tab:benchmark-system-specs} below.
+
+\begin{table}[H]
+    \begin{scriptsize}
+        \centering
+        \caption{Benchmark and Testing System Specifications}
+        \label{tab:benchmark-system-specs}
+        \begin{tabular}{|L{0.3\textwidth}|L{0.6\textwidth}|}
+            \hline
+            \textbf{Component}        & \textbf{Specification}                                                           \\ \hline
+            \textbf{Processor}        & 11th Gen Intel Core i7-1165G7 @ 2.80GHz, 2803 Mhz, 4 Cores, 8 Logical Processors \\ \hline
+            \textbf{Physical Memory}  & 16.0 GB                                                                          \\ \hline
+            \textbf{Graphics}         & Intel Iris Xe Graphics (CPU-integrated)                                          \\ \hline
+            \textbf{Operating System} & Microsoft Windows 11 Home 64-bit                                                 \\ \hline
+        \end{tabular}
+    \end{scriptsize}
+\end{table}
+
+A single data sample was used for benchmarking --- a set of 106 lateral movement frames at 1080p resolution taken from the publically accessible GRIDDS sample dataset \parencite{nunesGRIDDSGaitRecognition2019} --- with both approaches applied to the same sample.
+The aim here was to measure the time taken by each approach to perform feature extraction for an entire movement cycle (i.e., a person walking through the camera's field of view laterally).
+
+\paragraph{Model-based \ac{gr}} The OpenPose framework was used here. It enables extraction of 2-dimensional (or 3-dimensional with multiple cameras) joint information from images of people, with resolution options of 15, 18, or 25 joints (for full-body pose estimation).
+The framework's \codeword{OpenPoseDemo.exe} application was invoked to perform feature extraction, using the \codeword{pose\_iter\_584000} model.
+The configuration used when invoking the application via \codeword{CMD} is shown in Listing \ref{lst:openpose-benchmark-config} below.
+
+\begin{code}[minted language=bash]
+OpenPoseDemo.exe ^
+    --image_dir input_images ^
+    --write_json output ^
+    --display 0 ^
+    --render_pose 0 ^
+    --scale_number 1
+\end{code}
+\captionof{listing}{OpenPose Configuration for Benchmarking}
+\label{lst:openpose-benchmark-config} \vspace{10pt}
+
+\paragraph{Appearance-based \ac{gr}} A self-authored Python script, based on an example from \cite{songDevelopfengGaitRecognition2024}, was used to perform
+(1) Silhouette extraction for each frame and
+(2) grayscale GEI image creation and output.
+The temporal results of these benchmarks are shown in seconds in Table \ref{tab:gait-data-extraction-time-benchmark-results} below.
+
+\begin{scriptsize}
+    \begin{xltabular}{\textwidth}{|p{0.25\textwidth}|X|}
+        \caption{Gait Data Extraction Time Benchmark Results}
+        \label{tab:gait-data-extraction-time-benchmark-results} \\
+        \hline
+        \textbf{Approach}         & \textbf{Time (s)}     \\ \hline
+        \endfirsthead
+        \caption*{Gait Data Extraction Time Benchmark Results (Continued)} \\
+        \hline
+        \textbf{Approach}         & \textbf{Time (s)}     \\ \hline
+        \endhead
+        \hline
+        \endfoot
+        \textbf{Model-Based}      & 2986.8 (49.7 minutes) \\ \hline
+        \textbf{Appearance-Based} & 3.1                   \\
+    \end{xltabular}
+\end{scriptsize}
+
+At face-value, these tests show \ac{gei}-based feature extraction to be far more efficient than the model-based alternative.
+However, research explored in Chapter \ref{chap:context} suggests model-based approaches are more accurate and reliable if given enough resources (e.g., a more powerful \ac{gpu}).
+
+Because of the desire for this system to run on low-medium powered hardware, the decision was made to proceed with \ac{gei}-based \ac{gr}.
+This strays from what was defined in the \ac{ppd}, which proposed a model-based (i.e., skeleton) \ac{gr} approach.
+The intended functionality of the overall system however, remains the same.
+
+\subsection{Implementation Technology Stack}
+\label{subsec:implementation-technology-stack}
+
+The \acf{poc} solution was primarily built using the Python programming language HTML, and JavaScript, with a number of libraries and frameworks leveraged throughout, enabling:
+\ac{cv} and image processing,
+math and matrix transformations for statistical analysis,
+\ac{ml}-based feature extraction and classification,
+and the creation of \ac{ui}s based on designs illustrated in Section \ref{sec:design}.
+
+A detailed list of the technologies used, their purpose, and justifications for their use are shown in Table \ref{tab:tech-stack} below.
+
+\begin{scriptsize}
+    \begin{xltabular}{\textwidth}{|p{0.25\textwidth}|X|}
+        \caption{Implementation Technology Stack: Purpose and Justification}
+        \label{tab:tech-stack}                                                                                                                                                                                                                 \\
+        \hline
+        \textbf{Technology}          & \textbf{Purpose and Justification}                                                                                                                                                                      \\ \hline
+        \endfirsthead
+        \caption*{Implementation Technology Stack: Purpose and Justification (Continued)} \\
+        \hline
+        \textbf{Technology}          & \textbf{Purpose and Justification}                                                                                                                                                                      \\ \hline
+        \endhead
+        \hline
+        \endfoot
+        \textbf{Python}              & The primary programming language for backend development. Ideal for rapid development and prototyping.-, as well as math and \ac{ml}                                        \\ \hline
+        \textbf{Flask}               & Web framework for building the backend \ac{api} and routing front-end. Flask is lightweight and flexible, allowing for easy routing and handling of requests with minimal overhead.                                                \\ \hline
+        \textbf{OpenCV}              & Library for \ac{cv} tasks, including image processing. \ac{cv2} provides robust tools for image manipulation, making it suitable for tasks like silhouette extraction and background subtraction. \\ \hline
+        \textbf{TensorFlow}          & Framework for \ac{ml} tasks. TensorFlow supports efficient model training and deployment, particularly for tasks involving neural networks like \acp{cnn}.                                 \\ \hline
+        \textbf{EfficientNetB0}      & Pre-trained \ac{cnn} model for feature extraction from images. EfficientNetB0 offers a good balance between performance and computational efficiency, suitable for real-time applications.                   \\ \hline
+        \textbf{SQLAlchemy}          & ORM for database interactions. SQLAlchemy simplifies database operations and provides a high-level abstraction for managing database records.                                                           \\ \hline
+        \textbf{SQLite}              & Lightweight database for storing identities and gait samples. SQLite is easy to set up and requires no additional server, making it ideal for development and small-scale applications.                 \\ \hline
+        \textbf{HTML/CSS/JavaScript} & Technologies for building the frontend \ac{ui}. These are standard web technologies that allow for responsive and interactive web applications.                                                  \\ \hline
+        \textbf{Socket.IO}           & Library for real-time, low-overhead communication between back and front ends of both components. Socket.IO enables efficient data transmission, allowing for real-time updates without the overhead of traditional \ac{http} requests.         \\ \hline
+        \textbf{Jinja2}              & Templating engine for rendering HTML pages. Jinja2 allows for dynamic content generation in HTML, with variables able to be passed from the back-end to the front-end, making it easier to create interactive web pages.                                                     \\
+    \end{xltabular}
+\end{scriptsize}
+
+The list of hardware resources used throughout this project was much shorter and doesn't warrant a table, only requiring a laptop computer (details specified in Table \ref{tab:benchmark-system-specs}) for development and testing, an external webcam (Logitech C920) to capture video input, and a tripod (Manfrotto Compact Light) for mounting the webcam at an acceptable height and angle.

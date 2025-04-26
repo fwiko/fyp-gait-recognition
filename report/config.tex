@@ -1,0 +1,244 @@
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage[toc]{appendix}
+\usepackage{lipsum}
+\usepackage[export]{adjustbox}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{epsfig,graphics}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{caption}
+\usepackage{csquotes}
+\usepackage{wasysym}
+\usepackage[british]{babel}
+\usepackage[
+    backend=biber,
+    style=authoryear-ibid,
+    natbib=true,
+    url=false,
+    doi=true,
+    eprint=false
+]{biblatex}
+\usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{float}
+\usepackage{acro}
+\usepackage{subcaption}
+\usepackage[chapter]{minted}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{etoolbox}
+\usepackage{seqsplit}
+\usepackage{colortbl}
+\usepackage{changepage}
+\usepackage{xltabular}
+\usepackage[skins,breakable,most]{tcolorbox}
+\usepackage{lscape}
+\usepackage{pgfgantt}
+\usepackage{listings}
+\usepackage{pdfpages}
+\usepackage[absolute]{textpos}
+\usepackage{multirow}
+\usepackage{tikz}
+
+\usepackage{svg}
+
+\tcbuselibrary{listingsutf8, minted, breakable, skins}
+
+\captionsetup[table]{skip=0pt,singlelinecheck=off}
+
+\addbibresource{references.bib}
+
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
+\setminted{
+    fontsize=\footnotesize,
+    linenos,
+    autogobble,
+    breaklines,
+    tabsize=2,
+    baselinestretch=1.1,
+    numbersep=5pt
+}
+
+\setminted[python]{
+    python3=true
+}
+
+\setminted[javascript]{
+    funcnamehighlighting=true
+}
+
+\makeatletter
+\def\twodigits#1{\ifnum#1<10 0\fi\the#1}
+\def\UKDate{\twodigits\day/\twodigits\month/\the\year}
+\makeatother
+
+%\DeclareFieldFormat{urldate}{(Accessed: #1)}
+%\setlength\bibitemsep{0.5\baselineskip}
+%\stdpunctuation
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+%\addbibresource{refs.bib}
+
+\newcommand{\projectTitle}{Gait Recognition-based Authentication for User-Independent Physical Access Control}
+\newcommand{\fullname}{Rafferty Isaac Simms}
+\newcommand{\degreeTitle}{BSc Computer Systems (Cyber Security)}
+\newcommand{\session}{2024/25}
+\newcommand{\module}{COMP30151/52 Final Year Project}
+
+\newtcbox{\codeword}[1][]{%
+    enhanced,
+    on line,
+    tcbox raise base,
+    boxrule=0pt,
+    arc=2pt,
+    boxsep=0pt,
+    left=2pt,
+    right=2pt,
+    top=2pt,
+    bottom=2pt,
+    colback=gray!10,
+    colframe=gray!50,
+    fontupper=\ttfamily\footnotesize,
+    #1
+}
+
+\pagestyle{plain}
+\geometry{
+    a4paper,
+    left=40mm,
+    right=25mm,
+    top=25mm,
+    bottom=25mm,
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=black,
+    citecolor=black,
+    pdftitle={Final Year Project Report - Gait Recognition for Passive Access Control Authentication},
+    pdfauthor={Rafferty Isaac Simms},
+}
+
+\doublespacing
+
+\definecolor{darkred}{HTML}{C00000}
+\definecolor{darkgreen}{HTML}{00B050}
+
+
+\titleformat{\chapter}[display]
+{\normalfont\Huge\bfseries}{\vspace*{-1\baselineskip}\chaptertitlename\ \thechapter}{15pt}{\huge}
+\titlespacing*{\chapter}{0pt}{0pt}{15pt}
+
+
+\DeclareTextCommandDefault{\textcopyright}{\textcircled{c}}
+
+\newcommand{\frontcover}{
+    \begin{titlepage}
+        \newgeometry{left=25mm,right=25mm,top=45mm,bottom=0.1cm}
+
+
+        \begin{minipage}[t]{8cm}
+            \noindent\textbf{\Large{Department of Computer Science}}\\
+            {\fontfamily{ptm}\selectfont
+            \uppercase{School of Science and Technology}
+            }
+        \end{minipage}
+        \hfill
+        \begin{minipage}[t]{7cm}
+            \vspace*{-18pt}
+            \includegraphics[scale=0.2,right]{assets/ntu_logo}
+            \vspace*{-1pt}
+        \end{minipage}
+
+
+        \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+
+        \centering
+        \vspace*{20mm}
+        \textbf{\huge Final Year Project Report}\\
+        \vspace*{20mm}
+        \textbf{\Large\projectTitle}\\
+        \vspace*{10mm}
+        \textbf{\large\fullname}\\
+        \vspace*{10mm}
+        \textbf{Submitted in partial fulfillment of the requirements for the degree of}\\
+        \textbf{\degreeTitle}\\
+        \vspace*{10mm}
+        \session\\
+        \vspace*{10mm}
+        \module\\
+        \restoregeometry
+    \end{titlepage}
+}
+
+\newenvironment{dissertationabstract}
+{\cleardoublepage \null
+    \begin{center}%
+        \textbf{Abstract}
+    \end{center}}%
+{\vfill \null }
+
+\newcolumntype{R}[1]{>{\RaggedLeft}p{#1}}
+
+\newcolumntype{L}[1]{>{\RaggedRight}p{#1}}
+
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash\sloppy\hyphenpenalty=0\exhyphenpenalty=0}X}
+
+\DeclareCiteCommand{\ppracite}
+{\usebibmacro{prenote}}
+{\ifciteindex
+    {\indexfield{indextitle}}
+    {}%
+    \printfield[citetitle]{labeltitle},% 
+    \setunit{\addspace}%
+    \printnames{labelname}%
+    \setunit{, }%
+    \printfield{year}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\pprbcite}
+{\usebibmacro{prenote}}
+{\ifciteindex
+    {\indexfield{indextitle}}
+    {}%
+    \printfield[citetitle]{labeltitle},% 
+    \setunit{\addspace}%
+    \printnames{labelname}%
+    \setunit{, }%
+    \printfield{year}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+
+\newtcblisting{code}[1][]{%
+    listing engine=minted,
+    colback=gray!10,       % background color
+    colframe=gray!80,      % border color
+    minted style=colorful,  % style (same as minted)
+    minted language=python,  % default language
+    listing only,
+    breakable,
+    enhanced,
+    listing options={%
+            autogobble,
+            xleftmargin=\parindent, % Ensure left margin respects paragraph indentation
+            frame=single,           % Frame around the listing
+            breaklines=true,        % Allow line breaking
+            showstringspaces=false, % Avoid showing spaces inside strings
+            inputencoding=utf8,     % Make sure the input encoding is handled correctly
+            fontsize=\footnotesize, % Optional: adjust font size for better formatting
+            break anywhere,         % Allow breaking anywhere
+        },
+    #1
+}

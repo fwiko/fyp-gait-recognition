@@ -1,0 +1,60 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+The aim of this project, set in Chapter \ref{chap:new-ideas}, was to design, implement, and evaluate the performance of a "prototype access control system that uses \ac{gr} to passively identify subjects".
+
+Referring to the results of Chapter \ref{chap:implementation} --- Implementation and Chapter \ref{chap:results-and-evaluation} --- Results and Discussion, the project can be considered a success, both functional, and personal in respect to the researcher.
+
+\subsection{Achievements}
+
+This project successfully achieved the core aim outlined in the \ac{ppd} and refined in Chapters \ref{chap:context} and \ref{chap:new-ideas}, with all five objectives met as well as all mandatory and desired functional and non-functional requirements.
+The system's architecture was implemented as planned, with a client-server topology communicating via an \ac{api}.
+This supports scalability, with the potential for a multi-client-server setup to be implemented in the future --- beneficial in the context of a \ac{pacs}.
+
+Significant technical achievements of this project include the implementation of a \ac{cnn} + \ac{pca} + cosine similarity classificaiton pipeline for identifying users based on a single image representation of their statistical and spatio-temporal gait features --- a \ac{gei}.
+Fully functional identity registration and classification pipelines were also implemented,which enable live and asynchronous demonstration of the systems capabilities, aiding in the justification of implementing such a system in a real-world setting. The manual classification feature and \ac{grs} 'register' and 'classify' endpoints  significantly supporting the evaluation of the system's performance and accuracy.
+
+All of this was achieved while using medium-powered consumer-grade hardware (defined in Section \ref{sec:technologies-used-and-techniques-applied}) for development and evaluation. 
+This proves the system's efficiency and feasibility for cost-effective implementation in a real-world setting, especially when compared to the assumed cost of the only existing example of a \ac{gr}-based \ac{pacs} system --- \cite{stepscanGaitAuthenticationSecurity2020}.
+
+\subsection{Criticism}
+
+Despite the overwhelming success of the project, several issues were encountered, throughout both development and evaluation. 
+The system also faces several limitations that have not been mitigated, these issues and limitations include:
+
+\paragraph{Overfitting} The initial choice of classification approach was a $k$-\ac{nn} model. 
+Unfortunately, this displayed high sensitivity when tested on small datasets, resulting in overfitting where subjects were commonly misclassified, and confidently so.
+This necessitated futher development time to transition to a \ac{cnn} + \ac{pca} + cosine similarity based approach, which has proven much more effective, as evidenced by the results in Chapter \ref{chap:results-and-evaluation}.
+There still remains room for improvement, with a more targeted approach --- the pre-trained \codeword{EfficientNetB0} model is a generic image classification model, and could be replaced with a model trained on a gait-specific dataset.
+
+\paragraph{Data Sensitivity and Environment Inconsistency} Although considered a success, the effectiveness of the silhouette extraction process is dependent on the contrast between the subject and background, meaning in varied environments, and with different subjects and clothing, accuracy is reduced.
+
+\paragraph{Test Diversity} While performance testing was conducted using a secondary dataset of over 100 subjects, primary testing only consisted of six (6) subjects, albeit with a balanced sex ratio: 3 females and 3 males.
+The small sample size may have resulted in potential issues being missed, meaning the results may not represent the performance of the system in a real-world setting with far more subjects.
+
+\paragraph{Ethical Concerns} Most negative-leaning feedback received from the initial public opinion survey (see Section \ref{app:public-opinion-survey}) and post-user testing questionnaire (see Section \ref{subsec:user-testing}) involved concerns about the potential misuse --- especially relating to surveillance --- of \ac{gr}-based identification technology.
+If adopted in a real-world setting, legislation and policies must be updated to control the use of behavioural biometric factors, like how existing legislation controls the use of \ac{pii}.
+
+
+\subsection{Future Work}
+
+As it stands, several improvements could be made to this system, these have been briefly covered throughout the report, but include the following:
+
+\paragraph{Multiview Capture} As discussed in Chapter \ref{chap:context}, state-of-the-art proposals in \ac{gr} utilise multiple cameras to capture different angles of subjects. 
+Increasing the number of datapoints available would likely have a direct impact on classification precision and robustness.
+OpenPose, the model-based pose estimation framework discussed in Section \ref{subsubsec:model-based-approaches} supports multi-view input, infact it is required if wanting to produce a 3-dimensional pose estimate.
+Given suitable hardware is available, an 3D model-based approach may be a more effective demonstration of the potential accuracy of \ac{gr}.
+Alternatively, multi-view \ac{gei} could be implemented, which would likely still have an positive impact on accuracy.
+
+\paragraph{Hardware Optimization} Although development and evaluation was performed on a consumer-grade laptop, future research could focus on optimising the system for deployment on low(er)-powered edge devices (e.g., the Nvidia Jetson Nano). If successful, this may increase interest in adopting \ac{gr} in a real-world setting due to cost-effectiveness.
+
+\paragraph{Accessibility Enhancements} A requirement that was categorised using the MoSCoW prioritisation technique as a 'Won't Have' was to implement back-up access methods as a failsafe for when \ac{gr} is not possible due to environmental conditions, or subject impairment (e.g., wheelchair users).
+Implementing alternative access methods and producing a multi-modal access control architecture would be more comprehensive.
+
+\subsection{Final Thoughts}
+
+This project has validated the sanity in a proposition for a \ac{gr}-based \ac{pacs}, enabling user-independent authentication by leveraging behavioural biometrics to assess subjects from a distance.
+
+Although only a \ac{poc}, the system goes far beyong what would be considered an \ac{mvp} and is fully functional, as proven by demonstration of it's capabilities to volunteers and during functional and performance testing.
+
+Hopefully future research and development will be inspired by these findings, with the public sentiment and acceptance of \ac{gr} increasing.

@@ -1,0 +1,21 @@
+\section{Introduction}
+\label{sec:implementation-introduction}
+
+Based on the aims and objectives of this project outlined in Chapter \ref{chap:new-ideas}, options were evaluated to settle on the best course of action for implementing a solution that: met requirements, and could be completed within the allocated time frame, using available resources.
+
+The first half of this chapter: outlines the software development methodology followed, lists and justifies technologies and techniques used, and provides an overview of the intended system architecture using UML, Sequence, and Wireframe diagrams; conveying the structure of code, flow of data, and \ac{ui}layout.
+
+Following this, the second half of this chapter covers the development process in relation to the expected tasks and expected functionality defined in Chapter \ref{chap:new-ideas}.
+Implementation sections are not be ordered in exact accordance to the tasks defined in Table \ref{tab:project-tasks} or allocated time in Figure \ref{fig:gantt-chart}, but are instead ordered in a way that conveys the system's overall functionality in the best way possible.
+
+The list below provides a simplified overview of the contents and order of the development documentation in this chapter:
+
+\begin{enumerate}
+    \item \textbf{Gait Recognition Approach Benchmarking and Selection}: Model and appearance-based gait data extraction methods are benchmarked and a selection is made for this \ac{poc} system.
+    \item \textbf{Camera Input Processing and \ac{gei} Creation (spoiler!)}: The functionality of processing camera input and extracting and abstracting gait features is developed.
+    \item \textbf{Access Control Client Implementation}: The \ac{acc} is developed, leveraging the functionality implemented in \#2 above to capture, process, and transmit gait features for registration and classification.
+    \item \textbf{Gait Recognition Server Implementation}: The \ac{grs} is developed, implementing \ac{gr}, allowing registration of identities, and subsequent classification using \ac{cnn}, \ac{pca}, and cosine similarity.	\item \textbf{Implementation Technology Stack}: A list of technologies and techniques used to implement the system is provided, along with justifications for their use.	\item \textbf{System Architecture}: An overview of the system architecture is provided using UML, Sequence, and Wireframe diagrams.	\item \textbf{Gait Energy Image Creation}: The process of creating gait energy images (GEIs) is detailed, including the steps taken and the technologies used.
+\end{enumerate}
+
+\textit{Note:} The final testing and evaluation tasks detailed in Chapter \ref{sec:implementation-and-test-planning} are not covered here, and are instead discussed in Chapter \ref{chap:results-and-evaluation}.
+

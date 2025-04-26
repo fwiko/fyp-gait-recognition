@@ -1,0 +1,20 @@
+GEI Registration Response Time Analysis
+=======================================
+
+Analysis date: 2025-04-22 13:12:32
+Data source: registration_times.csv
+
+Basic Statistics:
+  Total requests analyzed: 372
+  Mean response time: 2.6265 seconds
+  Median response time: 2.8915 seconds
+  Min/Max response time: 0.3917/6.5613 seconds
+  Standard deviation: 1.1721 seconds
+
+Growth Trend Analysis:
+  First 25% of requests avg: 1.0020 seconds
+  Last 25% of requests avg: 3.3245 seconds
+  Change: 231.80%
+  Linear trend slope: 0.00757854 seconds/request
+
+  FINDING: Response times show SIGNIFICANT INCREASE as more samples are registered

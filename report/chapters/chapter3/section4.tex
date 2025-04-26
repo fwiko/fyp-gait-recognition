@@ -1,0 +1,413 @@
+\section{Implementation and Test Planning}
+\label{sec:implementation-and-test-planning}
+
+As discussed in \ref{sec:project-objectives-decomposition} the \ac{poc} will be implemented following an agile development strategy.
+Work has been separated into tasks, which will be completed in order of priority, but can be worked on in parallel or revisited if needed.
+
+Although contributing to the overall project deliverable, most tasks relates to one of three primary component of the \ac{poc}.
+Time has been allocated to tasks in day-sized chunks, with some set to be completed in parallel where dependencies allow.
+For example, the access control rules database could be modelled immediately, while other components of the \ac{acc} and \ac{grs} are being developed.
+Tasks may also be completed in parallel or consecutively where they contribute to the other's completion, like communication functionality between the \ac{acc} and \ac{grs}.
+
+The Gantt chart displayed in Figure \ref{fig:gantt-chart} on the next page illustrates milestones and the time allocated for each task's completion --- referencing the eighteen (18) tasks listed in Table \ref{tab:project-tasks}.
+Time for development has been set between the dates of March 1st and April 18th 2025, with the final product due for submission by April 25th at the latest, allowing a week of contingency.
+
+Most information regarding planning or design tasks, or work unrelated to this project (e.g., other university modules) has been abstracted, but can be seen in the original Gantt chart included in the \ac{ppd}.
+
+\begin{landscape} % Rotate page
+    \vspace*{\fill}
+    \begin{minipage}{\linewidth}
+        \centering
+        \begin{ganttchart}[
+                vgrid,
+                hgrid,
+                x unit=0.4cm,
+                y unit title=0.6cm,
+                y unit chart=0.5cm,
+                time slot format=isodate,
+                time slot unit=day,
+                title label anchor/.style={below=-1.6ex},
+                title label font=\scriptsize,
+                title left shift=0,
+                title right shift=0,
+                title height=1,
+                bar/.style={fill=blue!70},
+                bar height=0.6,
+                bar label font=\scriptsize,
+                group right shift=0,
+                group left shift=0,
+                group height=.5,
+                group peaks width={0.2},
+                milestone label font=\scriptsize,
+                milestone/.style={fill=black},
+                today=2025-03-03,
+                today rule/.style={draw=red, ultra thick},
+                today label=START,
+                canvas/.style={draw=none},
+                link/.style={-To}
+            ]{2025-03-03}{2025-04-18}
+            \gantttitle[
+                title/.append style={fill=blue!15}
+            ]{\scriptsize March 2025}{29}%
+            \gantttitle[
+                title/.append style={fill=green!15}
+            ]{\scriptsize April 2025}{18} \\
+            \gantttitlelist[
+                title/.append style={fill=blue!5}
+            ]{3,...,31}{1}%
+            \gantttitlelist[
+                title/.append style={fill=green!5}
+            ]{1,...,18}{1} \\
+
+            \ganttbar[name=task1]{Task 1: Identify GR approach}{2025-03-03}{2025-03-05} \\
+            \ganttbar[name=task2]{Task 2: Acquire hardware}{2025-03-06}{2025-03-09} \\
+            \ganttbar[name=task3]{Task 3: Identify software resources}{2025-03-06}{2025-03-08} \\
+            \ganttbar[name=task4]{Task 4: Movement data collection}{2025-03-10}{2025-03-16} \\
+            \ganttbar[name=task13]{Task 13: Create/acquire dataset}{2025-03-06}{2025-03-12} \\
+            \ganttbar[name=task14]{Task 14: Create data store/train model}{2025-03-13}{2025-03-18} \\
+            \ganttbar[name=task5]{Task 5: GRS comparison code}{2025-03-17}{2025-03-23} \\
+            \ganttbar[name=task6]{Task 6: Migrate code to ACC}{2025-03-17}{2025-03-21} \\
+            \ganttbar[name=task7]{Task 7: ACC-GRS communication}{2025-03-22}{2025-03-27} \\
+            \ganttbar[name=task8]{Task 8: Access control DB structure}{2025-03-10}{2025-03-14} \\
+            \ganttbar[name=task9]{Task 9: Access control rules code}{2025-03-15}{2025-03-20} \\
+            \ganttbar[name=task10]{Task 10: ACC UI for registration}{2025-03-22}{2025-03-28} \\
+            \ganttbar[name=task11]{Task 11: Binary output interface}{2025-03-29}{2025-04-01} \\
+            \ganttbar[name=task12]{Task 12: GRS UI for management}{2025-03-21}{2025-03-28} \\
+            \ganttbar[name=task15]{Task 15: Complete testing}{2025-04-02}{2025-04-08} \\
+            \ganttbar[name=task16]{Task 16: Demonstrations and feedback}{2025-04-09}{2025-04-12} \\
+            \ganttbar[name=task17]{Task 17: Evaluate final product}{2025-04-13}{2025-04-15} \\
+            \ganttbar[name=task18]{Task 18: Discuss feasibility}{2025-04-16}{2025-04-18} \\
+
+            \ganttlink{task1}{task2}
+            \ganttlink{task1}{task3}
+            \ganttlink{task1}{task13}
+            \ganttlink{task2}{task4}
+            \ganttlink{task3}{task4}
+            \ganttlink{task13}{task14}
+            \ganttlink{task4}{task5}
+            \ganttlink{task4}{task6}
+            \ganttlink{task8}{task9}
+            \ganttlink{task10}{task11}
+            \ganttlink{task14}{task15}
+            \ganttlink{task5}{task15}
+            \ganttlink{task6}{task15}
+            \ganttlink{task7}{task15}
+            \ganttlink{task9}{task15}
+            \ganttlink{task11}{task15}
+            \ganttlink{task12}{task15}
+            \ganttlink{task15}{task16}
+            \ganttlink{task16}{task17}
+            \ganttlink{task17}{task18}
+        \end{ganttchart}
+
+        \rule{\linewidth}{0.5pt} % horizontal line between chart and caption
+
+        \captionof{figure}{Gantt Chart for Implementation of a Gait Recognition System}
+        \label{fig:gantt-chart}
+    \end{minipage}
+    \vspace*{\fill}
+\end{landscape}
+
+Development was initially proposed to start in November 2024 as defined in the \ac{ppd}, but other, non-project-related tasks (e.g., other modules) have been prioritised.
+This has resulted in a restructure of the Gantt chart, with milestones pushed back.
+Findings during design and implementation may also lead to a \ac{gr} method being chosen that does not directly align with the original \ac{ppd} proposal, which specified the use of both \ac{ml}, and a (gait) model-based \ac{gr} approach.
+However, if changes are made, the project deadline and goal of producing a gait-based identification for use in a \ac{pacs} context should not be impacted.
+
+Using the risk assessment matrix displayed in Appendix \ref{app:risk-assessment-matrix}, a list of the most significant risks to the project were classified based on their probability and impact.
+
+
+\begin{scriptsize}
+    \begin{xltabular}{\textwidth}{|c|X|c|c|c|X|}
+        \caption{Risk Assessment and Mitigations} \\
+        \hline
+        \# & Risk & Probability & Impact & Rating & Mitigation \\
+        \hline
+        \endfirsthead
+        \caption*{Risk Assessment and Mitigations (Continued)} \\
+        \hline
+        \# & Risk & Probability & Impact & Rating & Mitigation \\
+        \hline
+        \endhead
+        \hline
+        \endfoot
+        
+        1 & Machine Learning Knowledge and Familiarity & 3 & 5 & \cellcolor{red!10} 15 & Consult with academic staff experienced in \ac{ml} \\
+        \hline
+        2 & Distributed Computing and Networking Familiarity & 2 & 3 & \cellcolor{yellow!10} 6 & Research networking principles and utilise available documentation for support \\
+        \hline
+        3 & Project Size and Scope being too large/wide & 2 & 3 & \cellcolor{yellow!10} 6 & Define clear project boundaries and implement phased approach with regular scope reviews \\
+        \hline
+        4 & Hardware Functionality and Compatibility & 3 & 5 & \cellcolor{red!10} 15 & Test hardware compatibility early, maintain backup hardware options \\
+        \hline
+        5 & Computer Processing Power Issues & 1 & 4 & \cellcolor{yellow!10} 4 & Optimise algorithms for efficiency and secure access to additional computing resources if needed \\
+        \hline
+        6 & Integration Challenges between Components & 2 & 4 & \cellcolor{yellow!10} 8 & Document \ac{api} specifications early and create detailed integration test plans \\
+        \hline
+        7 & Insufficient data capture or dataset resolution & 2 & 4 & \cellcolor{yellow!10} 8 & Implement data quality checks and plan for supplementary data collection if needed \\
+        \hline
+        8 & Limited historic research or dataset availability & 2 & 3 & \cellcolor{yellow!10} 6 & Identify alternative data sources and consider secondary datasets or synthetic data generation \\
+        \hline
+        9 & Unsuitable machine learning models for this use case & 2 & 5 & \cellcolor{orange!10} 10 & Research multiple model types and perform A/B testing \\
+        \hline
+        10 & Unsuitable speed of algorithms for smooth operation & 2 & 2 & \cellcolor{yellow!10} 4 & Benchmark gait data extraction algorithms early and optimise critical paths \\
+        \hline
+        11 & Data Processing Liability (Legality Related) & 1 & 5 & \cellcolor{yellow!10} 5 & Consult legal expertise or documentation to ensure compliance with relevant regulations \\
+        \hline
+        12 & Issues with subject availability for data collection & 2 & 4 & \cellcolor{yellow!10} 8 & Create flexible scheduling (agile development) and have backup subjects identified \\
+        \hline
+        13 & Issues with performing adequate tests to assess functionality & 3 & 3 & \cellcolor{yellow!10} 9 & Develop comprehensive test plan with a measure of effectivness if functionality is not achievable \\
+        \hline
+        14 & Unforeseen delays to project for personal reasons & 2 & 5 & \cellcolor{orange!10} 10 & Build buffer time into schedule and have contingency plans for critical tasks (don't plan tasks until right before due date)\\
+        \hline
+        15 & Unforeseen availability issues with project tutor & 2 & 2 & \cellcolor{darkgreen!10} 4 & Establish multiple communication channels and schedule regular check-ins, produce documentation and plans to follow unsupervised \\
+        \hline
+        16 & Unforeseen data loss of documentation, report or code & 1 & 5 & \cellcolor{yellow!10} 5 & Implement regular backups and version control \\
+        \end{xltabular}
+    
+\end{scriptsize}
+
+Based on the tasks defined in Table \ref{tab:project-tasks} and laid out in the Gantt chart illustrated in Figure \ref{fig:gantt-chart}, a set of requirements have been drafted in an effort to explicitly define what the deliverable of this project should provide in terms of functionality and operability.
+These are outlined in Sections \ref{subsec:grs-requirements} and \ref{subsec:acc-requirements} and have been defined using the MoSCoW prioritisation framework \parencite{brennanGuideBusinessAnalysis2009} categorising requirements as follows:
+
+\begin{enumerate}
+    \item \textbf{\tcbox[on line, colback=red!10, boxrule=0pt, boxsep=0pt]{(M)ust Haves}} Requirements that are critical to the deliverable meeting the project's aim(s).
+    \item \textbf{\tcbox[on line, colback=orange!10, boxrule=0pt, boxsep=0pt]{(S)hould Haves}} Requirements that are important and add value but can be delayed if needed.
+    \item \textbf{\tcbox[on line, colback=yellow!10, boxrule=0pt, boxsep=0pt]{(C)ould Haves}} Requirements that would improve the project quality but are not necessary.
+    \item \textbf{\tcbox[on line, colback=green!10, boxrule=0pt, boxsep=0pt]{(W)on't Haves}} Things that will not be added in this round of development but may in future.
+\end{enumerate}
+
+Additionally, the type of each requirement;
+Functional or Non-Functional, has been specified.
+Functional requirements define what the deliverable(s) should be capable of, whereas non-functional requirements define expected performance quality and usability \parencite{brennanGuideBusinessAnalysis2009}.
+Each requirement has been assigned an ID for reference in Chapters \ref{chap:implementation} and \ref{chap:results-and-evaluation}.
+IDs are suffixed with 'GR' if primarily relating to the \ac{grs}, or 'AC' for the \ac{acc}.
+An 'F' is added to the suffix if the requirement is functional, or 'NF' if non-functional.
+
+\subsection{Gait Recognition Server Requirements}
+\label{subsec:grs-requirements}
+
+\paragraph{Functional Requirements} Table \ref{tab:grs-functional-requirements} below displays functional requirements relating primarily to the \ac{grs} component of this project, listed in priority order.
+
+\begin{scriptsize}
+    \begin{longtable}[H]{|p{0.075\textwidth}|p{0.7\textwidth}|p{0.125\textwidth}|}
+        \caption{Gait Recognition Server Functional Requirements}
+        \label{tab:grs-functional-requirements}                                                                                                                \\
+        \hline
+        \textbf{ID}    & \textbf{Description}                                                                               & \textbf{Priority}                \\ \hline
+        \endfirsthead
+        \caption*{Gait Recognition Server Functional Requirements (Continued)}                                                                                 \\
+        \hline
+        \textbf{ID}    & \textbf{Description}                                                                               & \textbf{Priority}                \\ \hline
+        \endhead
+        \hline
+        \endfoot
+        \textbf{GRF1}  & MUST support the addition (registration) of new identities and gait cycles.                        & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{GRF2}  & MUST be able to predict identity using movement data captured in real-time.                        & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{GRF3}  & MUST produce suitable log entries dictating events (e.g., registration, deletion, identification). & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{GRF4}  & MUST store a dataset of historic movement data to enable comparisons and classification.           & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{GRF5}  & MUST include a database holding access control rules that can be associated with an identity.      & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{GRF6}  & MUST contain a \ac{ui} allowing configuration of access rules and management of identities.        & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{GRF7}  & configuration functionality SHOULD operate independently of the \ac{acc}.                          & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{GRF8}  & SHOULD receive movement data data from the \ac{acc} over a network connection.                     & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{GRF9}  & SHOULD dispay the identity prediction or specify 'unknown' after an identificaiton query is made.  & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{GRF10} & COULD use a trained \ac{ml} model to classify gait data.                                           & \cellcolor{yellow!10} \textbf{C} \\ \hline
+        \textbf{GRF11} & COULD support input from multiple \ac{acc} 'nodes' in parallel.                                    & \cellcolor{yellow!10} \textbf{C} \\ \hline
+        \textbf{GRF12} & WON'T use a multi-camera-angle \ac{gr} architecture.                                               & \cellcolor{green!10} \textbf{W}  \\ 
+    \end{longtable}
+\end{scriptsize}
+
+\paragraph{Non-Functional Requirements} Table \ref{tab:grs-non-functional-requirements} below displays non-functional requirements relating to the \ac{grs} component of this project, listed in priority order.
+
+\begin{scriptsize}
+    \begin{longtable}[H]{|p{0.1\textwidth}|p{0.7\textwidth}|p{0.125\textwidth}|}
+        \caption{Gait Recognition Server Non-Functional Requirements}
+        \label{tab:grs-non-functional-requirements}                                                                                                                                                                                  \\
+        \hline
+        \textbf{ID}    & \textbf{Description}                                                                                                                                                     & \textbf{Priority}                \\ \hline
+        \endfirsthead
+        \caption*{Gait Recognition Server Non-Functional Requirements (Continued)}                                                                                                                                                   \\
+        \hline
+        \textbf{ID}    & \textbf{Description}                                                                                                                                                     & \textbf{Priority}                \\ \hline
+        \endhead
+        \hline
+        \endfoot
+        \textbf{GRNF1} & MUST NOT retain movement data received during non-registration operations (i.e., passive identificaiton).                                                                & \cellcolor{red!10} \textbf{M}    \\ 
+        \textbf{GRNF2} & SHOULD be able to demonstrate functionality irrespective of the gender or age of a subject.                                                                              & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{GRNF3} & SHOULD be able to discern identity with minimal delay (e.g., max 15 seconds) after receiving movement data.                                                              & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{GRNF4} & SHOULD be able to operate effectively using consumer (low-medium power) processing and vision (camera) hardware.                                                         & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{GRNF5} & SHOULD be able to complete data processing for identity registration with minimal delay (e.g., max 5 seconds) after receiving movement data.                             & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{GRNF6} & WON'T be able to identify the same individual in vastly different contexts compared to those in which registration was performed (e.g., walking gradient, camera angle). & \cellcolor{green!10} \textbf{W}  \\
+    \end{longtable}
+\end{scriptsize}
+
+\subsection{Access Control Client Requirements}
+\label{subsec:acc-requirements}
+
+\paragraph{Functional Requirements} Table \ref{tab:acc-functional-requirements} below displays functional requirements relating to the \ac{acc} component of this project, listed in priority order. \\
+
+\begin{scriptsize}
+    \begin{longtable}[H]{|p{0.1\textwidth}|p{0.7\textwidth}|p{0.1\textwidth}|}
+        \caption{Access Control Client Functional Requirements}
+        \label{tab:acc-functional-requirements}                                                                                                            \\
+        \hline
+        \textbf{ID}    & \textbf{Description}                                                                           & \textbf{Priority}                \\ \hline
+        \endfirsthead
+        \caption*{Access Control Client Functional Requirements (Continued)}                                                                               \\
+        \hline
+        \textbf{ID}    & \textbf{Description}                                                                           & \textbf{Priority}                \\ \hline
+        \endhead
+        \hline
+        \endfoot
+        \textbf{ACF1}  & MUST use \ac{cv} to capture movement (gait) data.                                              & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{ACF2}  & MUST abstract captured data into a suitable format before sending to the \ac{grs}.             & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{ACF3}  & MUST wait for an identity to be returned by the \ac{grs} before permitting/denying access.     & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{ACF4}  & WILL depend on the \ac{grs} and send data over a network.                                      & \cellcolor{red!10} \textbf{M}    \\ \hline
+        \textbf{ACF5}  & SHOULD function effectively using consumer hardware (processing, camera).                      & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{ACF6}  & SHOULD contain a \ac{ui} displaying the movement data capture and processing feeds.            & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{ACF7}  & SHOULD contain a \ac{ui} allowing registration of new gait-based identities.                   & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{ACF8}  & SHOULD contain a form of output to demonstrate access being permitted or denied as a \ac{poc}. & \cellcolor{orange!10} \textbf{S} \\ \hline
+        \textbf{ACF9}  & COULD support asynchronous submission of historic gait data for identification.                & \cellcolor{yellow!10} \textbf{C} \\ \hline
+        \textbf{ACF10} & WON'T have a backup form of authentication as a fail-safe if \ac{grs} is not possible.         & \cellcolor{green!10} \textbf{W}  \\
+    \end{longtable}
+\end{scriptsize}
+
+\paragraph{Non-Functional Requirements} Table \ref{tab:acc-non-functional-requirements} below displays non-functional requirements relating to the \ac{acc} component of this project, listed in priority order.
+
+\begin{table}[H]
+    \caption{Access Control Client Non-Functional Requirements}
+    \label{tab:acc-non-functional-requirements}
+    \begin{scriptsize}
+        \begin{tabular}{|p{0.1\textwidth}|p{0.7\textwidth}|p{0.1\textwidth}|}
+            \hline
+            \textbf{ID}    & \textbf{Description}                                                                                      & \textbf{Priority}             \\ \hline
+            \textbf{ACNF1} & MUST NOT retain movement data captured during non-registration operations (i.e., passive identificaiton). & \cellcolor{red!10} \textbf{M} \\ \hline
+            \textbf{ACNF2} & WILL NOT be capable of handling the identification of multiple individuals simultaneously.                & \cellcolor{red!10} \textbf{M} \\ \hline
+            \textbf{ACNF3} & WILL NOT be attached to, nor control a physical entry way or door.                                        & \cellcolor{red!10} \textbf{M} \\ \hline
+        \end{tabular}
+    \end{scriptsize}
+\end{table}
+
+\subsection{Testing Plan}
+\label{subsec:testing-plan}
+
+After completion of the implementation stage (see Chapter \ref{chap:implementation}), the solution will be tested in multiple ways to ensure Functional and non-functional requirements are met, issues (if any) are identified, and user feedback can be received.
+Testing will complete objectives \#2 and \#4, and tasks \#15, \#16, and \#17 listed in Tables \ref{tab:project-objectives} and \ref{tab:project-tasks} respectively.
+
+Testing actions will fall into one of the three (3) categories (specified below), and will occur after implementation has concluded, with the results discussed in Chapter \ref{chap:results-and-evaluation}.
+
+\begin{enumerate}
+    \item \textbf{Functionality Testing} will evaluate functional and non-functional requirements of the \ac{grs} and \ac{acc} as outlined in sections \ref{subsec:grs-requirements} and \ref{subsec:acc-requirements}.
+    \item \textbf{Performance Testing} will evaluate the performance and accuracy of the final solution (relating to some non-functional requirements of the \ac{grs}), in relation to the project aim of demonstrating \ac{gr}-based identification for real-time \ac{pacs} access control.
+    \item \textbf{User Testing} will involve performing live testing and demonstrations with \ac{acc} and \ac{grs} to receive feedback and insights which will be compared to project aims and objectives, and concerns raised in the public opinion survey \ref{subsec:perceived-public-opinion-via-survey}.
+\end{enumerate}
+
+\subsubsection{Functionality Testing}
+\label{subsec:functionality-testing-plan}
+
+Table \ref{tab:core-tests} below lists ten (10) tests addressing requirements of the \ac{grs} and \ac{acc} pertaining to expectations under the \tcbox[on line, colback=red!10, boxrule=0pt, boxsep=0pt]{MUST} and \tcbox[on line, colback=orange!10, boxrule=0pt, boxsep=0pt]{SHOULD} have categories of the MoSCoW prioritisation framework in Tables \ref{tab:grs-functional-requirements}, \ref{tab:grs-non-functional-requirements}, \ref{tab:acc-functional-requirements}, and \ref{tab:acc-non-functional-requirements}.
+It covers requirements GRF1-GRF9, ACF1-ACF4, ACF6-ACF8, GRNF1, and ACNF1.
+
+\begin{scriptsize}
+    \begin{longtable}{|p{0.1\textwidth}|p{0.1\textwidth}|p{0.5\textwidth}|p{0.2\textwidth}|}
+        \caption{Gait Recognition Server Core Feature Tests}
+        \label{tab:core-tests}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \\
+        \hline
+        \textbf{ID}   & \textbf{Req}                                   & \textbf{Description and Methodology}                                                                                                                                                                                                                                                                                          & \textbf{Expected Result}                                                                                                                     \\ \hline
+        \endfirsthead
+        \caption*{Continued from previous page}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       \\
+        \hline
+        \textbf{ID}   & \textbf{Req}                                   & \textbf{Description and Methodology}                                                                                                                                                                                                                                                                                          & \textbf{Expected Result}                                                                                                                     \\ \hline
+        \endhead
+        \hline
+        \endfoot
+        \textbf{FT1}  & GRF1, GRF8, ACF1, ACF2, ACF7                   & Test the ability to register a new gait-based identity from the \ac{acc} \ac{ui}. From the \ac{acc}, capture and send movement data to the \ac{grs} with a specified label.                                                                                                                                                   & The \ac{grs} should store the gait cycle data under the given label.                                                                         \\ \hline
+        \textbf{FT2}  & GRF5, GRF6                                     & Test the ability to remove a previously registered identity from the \ac{grs} \ac{ui}. From the \ac{grs} \ac{ui}, delete the identity registered in T1.                                                                                                                                                                       & All data associated with the identity should be removed from persistent storage.                                                             \\ \hline
+        \textbf{FT3}  & GRF2, GRF4, GRF8, GRF9, ACF1, ACF2, ACF8       & Test the response of the \ac{grs} to an identification query for valid gait data. From the \ac{acc}, input movement data of a previously registered identity to be sent to the \ac{grs} for classification.                                                                                                                   & The \ac{grs} should return the correct identity information and access rule.                                                                 \\ \hline
+        \textbf{FT4}  & GRF2, GRF4, GRF7, GRF8, GRF9, ACF1, ACF2, ACF8 & Test the response of the \ac{grs} to an identification query for invalid gait data. From the \ac{acc}, input movement data of a non-registered identity to be sent to the \ac{grs} for classification.                                                                                                                        & The \ac{grs} should return unknown or a low confidence score, indicating that the identity is not recognized.                                \\ \hline
+        \textbf{FT5}  & GRF5, GRF6                                     & Test the ability to configure Boolean access rules per-identity from the \ac{grs} \ac{ui}. From the \ac{grs} \ac{ui}, configure an access rule for an individual identity from disallow to allow.                                                                                                                             & The \ac{grs} should update the access rule for the identity to match the new configuration.                                                  \\ \hline
+        \textbf{FT6}  & GRNF1, ACNF1                                   & Confirm that movement data sent during identification is not retained by the \ac{grs}. From the \ac{acc}, input movement data of a registered identity to be sent to the \ac{grs} for classification, then verify the data is not stored post-classification.                                                                 & The \ac{grs} should not retain the movement data received for classification after the process is complete.                                  \\ \hline
+        \textbf{FT7}  & ACF3                                           & Confirm that Boolean access rule output is not updated on the \ac{acc} \ac{ui} until the classification result is returned. From the \ac{acc}, input movement data of a registered identity to be sent to the \ac{grs} for classification, then verify that the access status remains unchanged until the result is returned. & The \ac{acc} \ac{ui} should not update the access output until the classification process is complete.                                       \\ \hline
+        \textbf{FT8}  & ACF4                                           & Confirm that the \ac{acc} does not function when the \ac{grs} is not running. Attempt to send movement data from the \ac{acc} to the \ac{grs} while it is not operational.                                                                                                                                                    & The \ac{acc} should indicate an error or failure to connect, confirming that it cannot process identification requests without the \ac{grs}. \\ \hline
+        \textbf{FT9}  & ACF6                                           & Confirm that the live camera feed and gait cycle extraction is displayed in the \ac{acc} \ac{ui}. Verify that the \ac{acc} \ac{ui} shows a real-time video feed from the camera and extracted gait cycle data.                                                                                                                & The \ac{acc} \ac{ui} should display the real-time camera feed and extracted gait cycle data without significant delay.                       \\ \hline
+        \textbf{FT10} & GRF3                                           & Confirm that a log of identification requests is kept and displayed on the \ac{grs} \ac{ui}. From the \ac{grs} \ac{ui}, send multiple identification requests and verify that each request is logged and displayed in the user interface.                                                                                     & The \ac{grs} \ac{ui} should show a complete log of all identification requests made, including timestamps and results.
+    \end{longtable}
+\end{scriptsize}
+
+Tests evaluating non-functional requirements relating to performance, accuracy, and usability (e.g., identification speed or of difference sexes, or the speed of gait cycle extraction for registration), are not included in this table and will be assessed in performance and accuracy testing (Section \ref{subsec:performance-and-accuracy-testing}) or user testing (Section \ref{subsec:user-testing}) where appropriate.
+
+\subsubsection{Performance and Accuracy Testing}
+\label{subsec:performance-and-accuracy-testing}
+
+To evaluate the system's ability to accurately and efficiently identify individuals based on their gait cycle, tests will be conducted to assess performance and accuracy in relation to some of the expectations set by non-functional \ac{grs} requirements defined in Table \ref{tab:grs-non-functional-requirements}.
+
+Performance tests will evaluate the speed at which the system can identify individuals and handle registration of new gait-based identities.
+Table \ref{tab:performance-tests} below lists tests designed to evaluate the performance of the final \ac{gr} system, referencing relevant requirements GRF1, GRF2, GRNF2-GRNF4, and ACNF1.
+
+\begin{scriptsize}
+    \begin{longtable}{|p{0.1\textwidth}|p{0.1\textwidth}|p{0.7\textwidth}|}
+        \caption{Performance Testing}
+        \label{tab:performance-tests}                                                                                                                                                                                          \\
+        \hline
+        \textbf{ID}  & \textbf{Req} & \textbf{Description}                                                                                                                                                                     \\ \hline
+        \endfirsthead
+        \caption*{Continued from previous page}                                                                                                                                                                                \\
+        \hline
+        \textbf{ID}  & \textbf{Req} & \textbf{Description}                                                                                                                                                                     \\ \hline
+        \endhead
+        \hline
+        \endfoot
+        \textbf{PT1} & GRF2, GRNF2  & The accuracy of the system should be tested against a range of subjects (varying sex, age, and body type) to determine if it can correctly discern identity regardless of these factors. \\ \hline
+        \textbf{PT2} & GRNF3, GRNF4 & The system should be tested on consumer hardware (e.g., laptop and webcam) to determine if it operates efficiently at a reasonable level on low-power, budget-friendly hardware.         \\ \hline
+        \textbf{PT3} & GRNF3        & The raw speed of identification should be assessed to determine if it is capable of identifying individuals in real-time (within 10 seconds).                                            \\ \hline
+        \textbf{PT4} & GRF1, ACNF1  & The speed of registering a new identity should be assessed to ensure that the system can process new registrations within an acceptable time frame (under 5 seconds).
+    \end{longtable}
+\end{scriptsize}
+
+In addition to the performance tests defined above, accuracy tests will be conducted to evaluate how well the system can correctly identify individuals, conducted based on the following methodology:
+
+\begin{adjustwidth}{1cm}{}
+    "The final system will be populated with a number of identities, each with associated gait cycle data.
+    Fresh gait cycle data will be captured and input, being submitted to the \ac{grs} for classification.
+    The results will be compared to the manually verified identity of the subject, allowing a measure of accuracy to be determined."
+\end{adjustwidth}
+
+Since the system will focus on recognising known individuals, accuracy evaluations will assess correct and incorrect \textit{positive} identifications only, with no consideration given to \textit{false negatives} at this stage.
+Results of this analysis will be communicated using the accuracy: \textit{The percentage of identification attempts that resulted in the correct identity being returned}.
+
+\[ \text{Accuracy} = \frac{TP}{TP + FP} \]
+
+Where:
+\begin{itemize}
+    \item $TP$ = True Positives (correctly identified individuals)
+    \item $FP$ = False Positives (incorrectly identified individuals)
+\end{itemize}
+
+\textit{Note:} As true and false negatives are not calculable in this (prediction-based) context, recall, precision, and F-measure are not applicable.
+
+\subsubsection{User Testing}
+\label{subsec:user-testing}
+
+User testing will be conducted to evaluate the usability of the system, conducted based on the following methodology:
+
+\begin{adjustwidth}{1cm}{}
+    "The final system will be tested several subjects, with varying levels of experience with access control systems.
+    Subjects will be taken through the identity registration (on-boarding) process,
+    before the system's ability to identify them without manual intervention is demonstrated.
+
+    Following on-boarding and demonstration, subjects will be asked to fill out a questionnaire (see questions below),
+    providing feedback on the ease of registration, percieved speed of identification,
+    and interest of using a system of this nature in a real-world context.
+    Subjects will also be given the opportunity to raise any concerns or issues they may have with the system or concept of passive identification."
+\end{adjustwidth}
+
+This methodology aims to provide insights into the following areas:
+
+\begin{itemize}
+    \item \textbf{Usability and onboarding experience:} How intuitive and straightforward users find the registration process, including the clarity of instructions and the responsiveness of the system during interaction.
+
+    \item \textbf{Perceived performance and convenience:} Users' impressions of the system's identification speed and their perception of the convenience afforded by passive, contactless authentication.
+
+    \item \textbf{User preference and acceptance:} Whether users would prefer gait-based, passive authentication over traditional methods such as key cards, PIN codes, or fingerprint scanners, and their willingness to adopt such a system in real-world contexts.
+
+    \item \textbf{Concerns and perceived risks:} Any opinions users have regarding data privacy, potential for misuse, or ethical considerations surrounding behavioural biometrics, particularly in environments where such technologies might be implemented.
+\end{itemize}

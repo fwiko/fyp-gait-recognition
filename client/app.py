@@ -64,7 +64,7 @@ def classification_thread():
 
 def main():
     # Initialise camera (ID: 1 for the external webcam)
-    cam = Camera(camera_id=1)
+    cam = Camera(camera_id=0)
     cam.start()
 
     # Initialise the gait processor with a buffer size of 30 frames (number of frames contributing to a GEI)
@@ -126,7 +126,9 @@ register_socket_events(socketio)  # Register WebSocket events
 app.register_blueprint(routes)  # Register routes
 
 if __name__ == "__main__":
-    threading.Thread(target=classification_thread, daemon=True).start()  # Start the classification thread
+    threading.Thread(
+        target=classification_thread, daemon=True
+    ).start()  # Start the classification thread
 
     threading.Thread(target=main, daemon=True).start()
 

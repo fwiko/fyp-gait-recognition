@@ -1,0 +1,45 @@
+\section{Gait Recognition-based Authentication}
+\label{sec:new-ideas-gait-recognition}
+
+\paragraph{Chapter \ref{chap:context} Recap} From a security perspective, \ac{gr}-based authentication can contribute to eliminating vulnerabilities found in traditional systems by using inherence factor-based (biometric) credentials tied to user physiology --- similar to existing technologies like Face and Fingerprint recognition (see Section \ref{subsec:biometric-authentication-trends}).
+Biometrics remove the need for users to carry physical credentials or remember secret values (e.g., \ac{rfid} Key Cards or \ac{pin} codes in traditional systems).
+These approaches reduce the risk of the theft of, or users misplacing or forgetting credentials.
+
+While use of biometric authentication for \ac{pacs} is rising, with implementations of Face, Fingerprint, and Iris recognition being reported \parencite{ifsecglobalStatePhysicalAccess2024}, alternate biometrics like \ac{gr} may help improve the user experience by eliminating pain points experienced with existing solutions.
+The most common \ac{pacs} biometrics are inarguably accurate and reliable \parencite{nationalinstituteofstandardsandtechnologyNISTStudyShows2004,universityofbaghdadHighaccuracyModelsIris2024}.
+However, as discussed in Chapter \ref{chap:context}, all operate in ways that could be considered obtrusive; users must divert their attention and actively participate (e.g., to scan their fingerprint), or influence accuracy (e.g., face coverings \parencite{cooperEffectsFaceCoverings2022} or changes in environment \parencite{brajeIlluminationEffectsFace1998} affecting Facial Recognition effectiveness).
+
+This project aims to present \ac{cv}-based \ac{gr} as a viable alternative for \ac{pacs} authentication, or authentication in general.
+It contrasts existing solutions, by primarily being able to operate passively and identify individuals from a distance, while also not suffering from single points of failure, such as face coverings that impact Face Recognition systems.
+
+Although a promising solution to improving the security and usability of \ac{pacs}, \ac{cv}-based \ac{gr} has its own requirements that may sway effectiveness.
+Physically, there must be enough space to enable a camera to capture subject's walking cycle.
+It also remains somewhat reliant on environmental conditions, with changes affecting walking style, or camera's ability to capture usable data.
+Additionally, as mentioned in Section \ref{subsec:cv-based-gr-techniques}, \ac{gr} requires hardware powerful enough to process gait cycle data in real-time, which is important when trying to identify subjects unobtrusively.
+
+\subsection{Strength, Weakness, Opportunity, and Threat Analysis}
+
+To evaluate this proposal from a strategic perspectice, a SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis has been conducted.
+This provides a view of internal and external factors that could influence the success or openness to adoption of \ac{gr}-based authentication.
+The proposal is assessed in respect to performance, security, cost, and ethical concerns discussed in Chapter \ref{chap:context}.
+
+\begin{itemize}
+    \item \textbf{Strengths}: A \ac{cv}-based \ac{gr} authentication system can operate passively, identifying subjects from a distance without their direct participation.
+          It's use of biometric physiological factors (gait), reduces risks relating to lost or stolen credentials.
+          A modular client-server architecture supports future scalability and allows an agile development process.
+
+    \item \textbf{Weaknesses}: A \ac{cv}-based \ac{gr} system remains influenced by environmental conditions (e.g., lighting and background contrast) that can affect accuracy, similar to facial recognition.
+          Performance of the system may vary on an individual level due to natural gait variability or temporary changes due to injury, or a change in clothing or footwear.
+          The real-time demands of a \ac{pacs} may exceed the capabilities of accessible hardware when performing \ac{gr} processing.
+
+    \item \textbf{Opportunities}:
+          \ac{gr}-based authentication could be deployed to enable frictionless access control in environments like offices, hospitals, and schools.
+          Interest in contactless authentication relates mostly to convenience, security, and hygiene concerns.
+          Future developments could combine \ac{gr} with other biometric factors (multi-modal biometrics) for higher accuracy.
+
+    \item \textbf{Threats}:
+          Privacy concerns appear high, with primary research (see Section \ref{subsec:perceived-public-opinion-via-survey}) highlighting anxiety about the collection and use of their biometric data.
+          The accuracy of the system may prove to be much lower than other biometrics like facial or fingerprint recognition \parencite{nationalinstituteofstandardsandtechnologyNISTEvaluatesFace2021,nationalinstituteofstandardsandtechnologyNISTStudyShows2004}, impacting feasibility.
+          Spoofing or adversarial attacks against gait recognition may be easier to achieve compared to other biometrics, which could lead to false acceptances or denials, impacting confidentiality, integrity, or availability.
+
+\end{itemize}

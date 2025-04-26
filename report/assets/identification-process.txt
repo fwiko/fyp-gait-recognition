@@ -1,0 +1,66 @@
+
+entity "Video Camera" as Camera
+control "Access Control Client" as Client
+control "GEI Process" as GEIProcess
+
+boundary "Server" as Server
+
+database "Gait Samples" as GaitDB
+database "Access Rules" as RulesDB
+
+loop Main Thread
+    Camera->Client: Video Frame Input
+    activate Client
+    Client->Client: Buffer Video Frames
+    
+    
+    Client->GEIProcess: Process Buffered Frames
+    deactivate Client
+    
+    activate GEIProcess
+    GEIProcess->GEIProcess: Person Detection
+    GEIProcess->GEIProcess: Background Subtraction
+    GEIProcess->GEIProcess: Silhouette Normalisation
+    GEIProcess->GEIProcess:GEI Creation
+    GEIProcess-->Client: Return Generated GEI
+    deactivate GEIProcess
+    activate Client
+end
+loop Classification Thread
+    
+    Client->Server: Send GEI for Identification
+    deactivate Client
+    
+    activate Server
+    Server->GaitDB:Find Matching GEI Pattern
+    activate GaitDB
+    GaitDB-->Server:Identity or NULL
+    deactivate GaitDB
+    
+        Server->RulesDB:Query Identity's Access Rule
+        activate RulesDB
+        RulesDB-->Server:Access Rule: boolean
+        deactivate RulesDB
+    alt Identity Found
+        
+        
+        Server-->Client:Return Identity, Access Rule, and Confidence\n{identity: string, access: boolean, confidence: float}
+        activate Client
+        Client->Client:Display Identity and Confidence
+        
+        alt access: true
+            Client->Client:Display "Access Granted"
+        else access: false
+            Client->Client:Display "Access Denied"
+        end
+        
+    else Unknown Identity
+        Server-->Client:Unknown Identity
+        activate Client
+        Client->Client:Display "Unknown"
+    end
+    deactivate Server
+    
+    Client->Client: Clear Buffer for Next Cycle
+    deactivate Client
+end
