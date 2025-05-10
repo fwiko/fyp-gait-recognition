@@ -20,7 +20,7 @@ __pycache__
 *.url
 *.svn
 *.toc
-/*.pdf
+*.pdf
 *.bcf
 *.fls
 *.listing
