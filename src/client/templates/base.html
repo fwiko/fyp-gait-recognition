@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gait Recognition{% endblock %}</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <h1>{% block header %}Gait Recognition{% endblock %}</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('routes.index') }}" {% if request.endpoint=='routes.index' %}class="active" {%
+                        endif %}>Live Classification</a></li>
+                <li><a href="{{ url_for('routes.manual') }}" {% if request.endpoint=='routes.manual' %}class="active" {%
+                        endif %}>Manual Classification</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2024/25 Nottingham Trent University and Rafferty Isaac Simms</p>
+    </footer>
+
+</body>
+
+</html>
