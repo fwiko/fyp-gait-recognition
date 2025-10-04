@@ -1,0 +1,38 @@
+name: Build LaTeX and push PDF
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up LaTeX
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: report/report.tex
+
+      - name: Move generated PDF
+        run: |
+          mv report.pdf report/report.pdf
+
+      - name: Commit PDF
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add report/report.pdf
+          git commit -m "Auto-build PDF from LaTeX [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
