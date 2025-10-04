@@ -1,4 +1,4 @@
-name: Build LaTeX and push PDF
+name: Build Report LaTeX and push PDF
 
 permissions:
   contents: write
