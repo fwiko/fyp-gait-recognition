@@ -18,13 +18,14 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up LaTeX
+      - name: Build LaTeX document
         uses: xu-cheng/latex-action@v3
         with:
           root_file: report.tex
           working_directory: report
+          args: -pdf -interaction=nonstopmode -shell-escape -file-line-error -use-biber
 
-      - name: Commit PDF
+      - name: Commit generated PDF
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
