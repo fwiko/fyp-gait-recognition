@@ -23,7 +23,9 @@ jobs:
         with:
           root_file: report.tex
           working_directory: report
-          args: -pdf -interaction=nonstopmode -shell-escape -file-line-error -use-biber
+          args: -pdf -interaction=nonstopmode -shell-escape -file-line-error
+        env:
+          LATEXMK_USE_BIBER: "true"
 
       - name: Commit generated PDF
         run: |
