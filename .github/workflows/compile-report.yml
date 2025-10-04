@@ -21,11 +21,8 @@ jobs:
       - name: Set up LaTeX
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: report/report.tex
-
-      - name: Move generated PDF
-        run: |
-          mv report.pdf report/report.pdf
+          root_file: report.tex
+          working_directory: report
 
       - name: Commit PDF
         run: |
