@@ -1,1 +1,10 @@
-*.tex -linguist-detectable
+*.tex linguist-detectable=false diff=false
+*.sty linguist-detectable=false diff=false
+*.cls linguist-detectable=false diff=false
+*.bib linguist-detectable=false diff=false
+*.aux linguist-detectable=false diff=false
+*.log linguist-detectable=false diff=false
+*.toc linguist-detectable=false diff=false
+*.out linguist-detectable=false diff=false
+*.bbl linguist-detectable=false diff=false
+*.blg linguist-detectable=false diff=false
