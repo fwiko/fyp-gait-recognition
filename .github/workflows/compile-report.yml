@@ -19,7 +19,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build LaTeX document
+      - name: Build LaTeX document for report
         uses: xu-cheng/latex-action@v3
         with:
           root_file: report.tex
@@ -28,12 +28,21 @@ jobs:
         env:
           LATEXMK_USE_BIBER: "true"
 
-      - name: Commit generated PDF
+      - name: Build LaTeX document for datasheet
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: datasheet.tex
+          working_directory: report
+          args: -pdf -interaction=nonstopmode -shell-escape -file-line-error
+        env:
+          LATEXMK_USE_BIBER: "true"
+
+      - name: Commit generated PDF documents
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add report/report.pdf
-          git commit -m "Auto-build PDF from LaTeX [skip ci]" || echo "No changes to commit"
+          git add report/report.pdf report/datasheet.pdf
+          git commit -m "Auto-build PDF documents from LaTeX" || echo "No changes to commit"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
